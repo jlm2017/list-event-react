@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 import 'whatwg-fetch';
-import Event from './Event.js'
+import EventItem from './EventItem.js'
 
 
 class EventList extends Component {
@@ -70,7 +70,10 @@ class EventList extends Component {
       );
     }
     // une fois la pase d'initialisation terminée on affiche la liste des événements obtenue
-    const listItems = this.state.listEventJson._items.map(event => (<Event event={event}></Event>));
+    const listItems = this.state.listEventJson._items.map(eventItem => {
+      var result = <div><EventItem key={eventItem._id} eventItem={eventItem}></EventItem> {eventItem !== this.state.listEventJson._items[this.state.listEventJson._items.length - 1] && <hr />}</div>;
+      return (result);
+    });
     return (
       <div>
         {listItems}
