@@ -1,5 +1,3 @@
-'use strict';
-
 import React, { Component } from 'react';
 import EventList from './EventList.js'
 
@@ -32,13 +30,20 @@ class FormNoZipcode extends Component {
       );
     }
     return (
-     <form onSubmit={this.handleSubmit}>
-       <label>
-         Name:
-         <input type="text" value={this.state.value} onChange={this.handleChange} />
-       </label>
-       <input type="submit" value="Submit" />
-     </form>
+      <div className="container">
+        <h4 className="text-center">
+          Recherche des groupes d'appuis autour de chez vous
+        </h4>
+        <div className="raw">
+          <form className="col-xs-offset-3 col-xs-8" onSubmit={this.handleSubmit}>
+            <label>
+              Code postale:
+              <input type="text" value={this.state.value} onChange={this.handleChange} />
+            </label>
+            <input type="submit" value="Rechercher" />
+          </form>
+        </div>
+      </div>
     );
   }
 }

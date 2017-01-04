@@ -1,5 +1,3 @@
-'use strict';
-
 import React, { Component } from 'react';
 import './App.css';
 import FormNoZipcode from './FormNoZipcode.js'
@@ -34,12 +32,6 @@ class App extends Component {
 
     return (
       <div className='App'>
-        <ul>
-          <li>{this.state.zipcode}</li>
-          <li>{this.state.embedEventType}</li>
-          <li>{this.state.embedTags.join('/')}</li>
-        </ul>
-        <p>test du composant</p>
         <EventList zipcode={this.state.zipcode} embedeventtype={this.state.embedEventType} embedTags={this.state.embedTags}/>
       </div>
     );

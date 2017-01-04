@@ -1,8 +1,6 @@
-'use strict';
-
 import React, { Component } from 'react';
 import 'whatwg-fetch';
-import EventItem from './EventItem.js'
+import EventItem from './EventItem.js';
 
 
 class EventList extends Component {
@@ -10,8 +8,12 @@ class EventList extends Component {
     super(props);
     this.state = {
       initialized: false,
+      requestError: false,
       listEventJson: null,
+      index: 0,
     };
+    // this.prevItem = this.prevItem.bind(this);
+    // this.nextItem = this.nextItem.bind(this);
   }
 
   getUrl() {
@@ -21,21 +23,21 @@ class EventList extends Component {
       return response.json();
     }).then(json => {
       //on obtient un object json, si il est vide, on s'arrette la
-      if (json.features.length == 0) return;
+      if (json.features.length === 0) return;
       //sinon on extrait les coordonées pour les insérées dans la requette urlZoomApi
       var coordinates = json.features[0].geometry.coordinates;
       var urlZoomApi;
       //en fonction du type d'événement et des tags que l'on recherche on créé notre urlZoomApi
-      if (this.props.embedeventtype.split(',')[0] == 'groups'){
+      if (this.props.embedeventtype.split(',')[0] === 'groups'){
         urlZoomApi = 'https://api.jlm2017.fr/groups?where={"coordinates":{"$near":{"$geometry":{"type":"Point","coordinates":['+coordinates[0]+','+coordinates[1]+']}, "$maxDistance": 10000}}';
-        if (this.props.embedTags != '')
+        if (this.props.embedTags[0] !== '')
           urlZoomApi += ',"tags": {"$elemMatch": {"$in": ' + JSON.stringify(this.props.embedTags) + '} }';
         urlZoomApi += '}';
       }
       else {
         urlZoomApi = 'https://api.jlm2017.fr/events?where={"agenda": "' + this.props.embedeventtype.split(',')[0] + '" ,"coordinates":{"$near":{"$geometry":{"type":"Point","coordinates":['+coordinates[0]+','+coordinates[1]+']}, "$maxDistance": 10000}}';
-        if (this.props.embedTags != '')
-          urlZoomApi += ',,"tags": {"$elemMatch": {"$in": ' + JSON.stringify(this.props.embedTags) + '} }';
+        if (this.props.embedTags[0] !== '')
+          urlZoomApi += ',"tags": {"$elemMatch": {"$in": ' + JSON.stringify(this.props.embedTags) + '} }';
         urlZoomApi += '}';
       }
       //une fois l'urlZoomApi obtenue, on lanche getJson pour obtenir le JSON des événements qui nous intéréssent
@@ -62,21 +64,61 @@ class EventList extends Component {
     this.getUrl();
   }
 
+  prevItem() {
+    this.setState({index: this.state.index - 1});
+  }
+
+  nextItem() {
+    this.setState({index: this.state.index + 1});
+  }
+
   render() {
     //tant que la phase d'initialisation n'est pas terminée on affiche loading
     if (this.state.initialized === false) {
       return (
-        <div> loading </div>
+        <p className="text-center">
+          Loading
+        </p>
       );
     }
     // une fois la pase d'initialisation terminée on affiche la liste des événements obtenue
-    const listItems = this.state.listEventJson._items.map(eventItem => {
-      var result = <div><EventItem key={eventItem._id} eventItem={eventItem}></EventItem> {eventItem !== this.state.listEventJson._items[this.state.listEventJson._items.length - 1] && <hr />}</div>;
+    const listItems = this.state.listEventJson._items.slice((6 * this.state.index), ((6 * this.state.index) + 5)).map(eventItem => {
+      var result = <div key={eventItem._id}><EventItem eventItem={eventItem}></EventItem> {eventItem !== this.state.listEventJson._items.slice((6 * this.state.index), ((6 * this.state.index) + 5))[this.state.listEventJson._items.slice((6 * this.state.index), ((6 * this.state.index) + 5)).length - 1] && <hr />}</div>;
       return (result);
     });
+    if (this.state.listEventJson._items.length === 0) {
+      return (
+        <p className="text-center vertical-center">
+          Pas d'événement dans les environs du code postale renseigné
+        </p>
+      );
+    }
     return (
-      <div>
-        {listItems}
+      <div className="container">
+        <div className="row">
+          <div className="col-xs-2 text-center vertical-center">
+            {this.state.index > 0 &&
+              <div className="clicable-btn" onClick={()=>this.prevItem()}>
+                  <img src={require('../img/prev.png')} alt="precedent"></img>
+              </div>
+            }
+          </div>
+          <div className="col-xs-8">
+            {listItems}
+            {this.state.listEventJson._items.length > 5 &&
+              <p className="text-center">
+                <small>page: {this.state.index + 1} / {Math.floor(this.state.listEventJson._items.length / 6) + 1}</small>
+              </p>
+            }
+          </div>
+          <div className="col-xs-2 text-center vertical-center">
+            {((6 * (this.state.index)) + 5) < this.state.listEventJson._items.length &&
+              <div className="clicable-btn" onClick={()=>this.nextItem()}>
+                <img src={require('../img/next.png')} alt="suivant"></img>
+              </div>
+            }
+          </div>
+        </div>
       </div>
     );
   }
