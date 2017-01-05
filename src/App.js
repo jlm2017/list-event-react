@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
 import FormNoZipcode from './FormNoZipcode.js'
-import EventList from './EventList.js'
 
 class App extends Component {
   constructor(props) {
