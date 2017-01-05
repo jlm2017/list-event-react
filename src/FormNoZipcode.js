@@ -6,8 +6,8 @@ class FormNoZipcode extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: '',
-      zipcode: null,
+      value: this.props.zipcode || '',
+      zipcode: this.props.zipcode || null,
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -24,25 +24,30 @@ class FormNoZipcode extends Component {
   }
 
   render() {
-    if (this.state.zipcode != null) {
-      return (
-       <EventList zipcode={this.state.zipcode} embedeventtype={this.props.embedeventtype} embedTags={this.props.embedTags}/>
-      );
-    }
     return (
       <div className="container">
         <h4 className="text-center">
           Recherche des groupes d'appuis autour de chez vous
         </h4>
-        <div className="raw">
-          <form className="col-xs-offset-3 col-xs-8" onSubmit={this.handleSubmit}>
-            <label>
-              Code postale:
-              <input type="text" value={this.state.value} onChange={this.handleChange} />
-            </label>
-            <input type="submit" value="Rechercher" />
-          </form>
+        <div className="row">
+          <div className="col-responsive">
+            <form className="form-group" onSubmit={this.handleSubmit}>
+              <div className="input-group">
+                <input className="form-control" type="text" value={this.state.value} placeholder="Code postal" onChange={this.handleChange} />
+                <div className="input-group-btn">
+                  <button className="btn btn-danger" type="button">Rechercher</button>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
+        {this.state.zipcode != null &&
+          <div className="row">
+            <hr/>
+            <br/>
+            <EventList zipcode={this.state.zipcode} embedeventtype={this.props.embedeventtype} embedTags={this.props.embedTags}/>
+          </div>
+        }
       </div>
     );
   }

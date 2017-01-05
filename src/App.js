@@ -24,16 +24,8 @@ class App extends Component {
   }
 
   render() {
-    if (this.state.zipcode === null) {
-      return(
-        <FormNoZipcode embedeventtype={this.state.embedEventType} embedTags={this.state.embedTags}/>
-      );
-    }
-
-    return (
-      <div className='App'>
-        <EventList zipcode={this.state.zipcode} embedeventtype={this.state.embedEventType} embedTags={this.state.embedTags}/>
-      </div>
+    return(
+      <FormNoZipcode embedeventtype={this.state.embedEventType} embedTags={this.state.embedTags} zipcode={this.state.zipcode}/>
     );
   }
 }

@@ -7,6 +7,7 @@ class EventList extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      zipcode: this.props.zipcode,
       initialized: false,
       requestError: false,
       listEventJson: null,
@@ -17,7 +18,7 @@ class EventList extends Component {
   }
 
   getUrl() {
-    //on recupère sur api-adresse.data.gouv.fr les coordonnées du code postale passé en parramétre d'url
+    //on recupère sur api-adresse.data.gouv.fr les coordonnées du code postal passé en parramétre d'url
     fetch('https://api-adresse.data.gouv.fr/search/?q='+ this.props.zipcode + '&postcode=' + this.props.zipcode)
     .then(response => {
       return response.json();
@@ -64,6 +65,15 @@ class EventList extends Component {
     this.getUrl();
   }
 
+  componentDidUpdate() {
+    //si le zipcode enregistré dans le state est differant de celui de props on fait une nouvelle requette a l'api.
+    if (this.props.zipcode != this.state.zipcode) {
+      //on reaffect le nouveau zipcode au state et on remmet la propriété initialized a false.
+      this.setState({zipcode: this.props.zipcode, initialized: false});
+      this.getUrl();
+    }
+  }
+
   prevItem() {
     this.setState({index: this.state.index - 1});
   }
@@ -89,7 +99,7 @@ class EventList extends Component {
     if (this.state.listEventJson._items.length === 0) {
       return (
         <p className="text-center vertical-center">
-          Pas d'événement dans les environs du code postale renseigné
+          Pas d'événement dans les environs du code postal renseigné
         </p>
       );
     }
@@ -107,7 +117,7 @@ class EventList extends Component {
             {listItems}
             {this.state.listEventJson._items.length > 5 &&
               <p className="text-center">
-                <small>page: {this.state.index + 1} / {Math.floor(this.state.listEventJson._items.length / 6) + 1}</small>
+                <small>Page&nbsp;: {this.state.index + 1} / {Math.floor(this.state.listEventJson._items.length / 6) + 1}</small>
               </p>
             }
           </div>
