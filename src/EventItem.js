@@ -18,7 +18,7 @@ class EventItem extends Component {
         <div className="col-xs-12 col-sm-8">
           <h3> <a href={`http://jlm2017.fr/${this.props.eventItem.path}`} target="_blank">{this.props.eventItem.name}</a></h3>
           {this.props.eventItem.location && this.props.eventItem.location.name &&
-            <div>Lieu(&nbsp;): {this.props.eventItem.location.name}</div>
+            <div>Lieu&nbsp;: {this.props.eventItem.location.name}</div>
           }
           {this.state.info &&
             <div>
@@ -26,18 +26,18 @@ class EventItem extends Component {
                 <div>
                   <br />
                   <h4>
-                    Adresse(&nbsp;):
+                    Adresse&nbsp;:
                   </h4>
                   <a href={`http://maps.google.com/?q=${this.props.eventItem.location.address}`} target="_blank">{this.props.eventItem.location.address}</a>
                 </div>
               }
               <br />
               <h4>
-                Contact(&nbsp;):
+                Contact&nbsp;:
               </h4>
-              <div><strong>Nom de l'initiatrice ou de l'initiateur(&nbsp;):</strong> {this.props.eventItem.contact.name}</div>
-              {this.props.eventItem.contact.email && <div><strong>Email(&nbsp;):</strong> {this.props.eventItem.contact.email} </div> }
-              {this.props.eventItem.contact.phone && <div><strong>Téléphone(&nbsp;):</strong> 0{this.props.eventItem.contact.phone} </div> }
+              <div><strong>Nom de l'initiatrice ou de l'initiateur&nbsp;:</strong> {this.props.eventItem.contact.name}</div>
+              {this.props.eventItem.contact.email && <div><strong>Email&nbsp;:</strong> {this.props.eventItem.contact.email} </div> }
+              {this.props.eventItem.contact.phone && <div><strong>Téléphone&nbsp;:</strong> 0{this.props.eventItem.contact.phone} </div> }
             </div>
           }
         </div>
