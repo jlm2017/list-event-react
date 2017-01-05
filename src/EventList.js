@@ -7,6 +7,7 @@ class EventList extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      error: null,
       zipcode: this.props.zipcode,
       initialized: false,
       requestError: false,
@@ -24,7 +25,10 @@ class EventList extends Component {
       return response.json();
     }).then(json => {
       //on obtient un object json, si il est vide, on s'arrette la
-      if (json.features.length === 0) return;
+      if (json.features.length === 0) {
+        this.setState({error: 'Mauvais code postal, veuillez réessayer!'});
+        return;
+      }
       //sinon on extrait les coordonées pour les insérées dans la requette urlZoomApi
       var coordinates = json.features[0].geometry.coordinates;
       var urlZoomApi;
@@ -41,9 +45,10 @@ class EventList extends Component {
           urlZoomApi += ',"tags": {"$elemMatch": {"$in": ' + JSON.stringify(this.props.embedTags) + '} }';
         urlZoomApi += '}';
       }
-      //une fois l'urlZoomApi obtenue, on lanche getJson pour obtenir le JSON des événements qui nous intéréssent
+      //une fois l'urlZoomApi obtenue, on lance getJson pour obtenir le JSON des événements qui nous intéréssent
       this.getJson(urlZoomApi);
-    }).catch(function(ex) {
+    }).catch(() => {
+      this.setState({error: 'Erreur serveur, veuillez réessayer plus tard!'});
       //message d'erreur a coder dans l'application
     });
   }
@@ -56,7 +61,8 @@ class EventList extends Component {
     }).then(json =>{
       //on assigne l" JSON obenu au composant et on declare que la phase d'initialisation est terminée
       this.setState({initialized: true, listEventJson: json});
-    }).catch(function(ex) {
+    }).catch(() => {
+      this.setState({error: 'Erreur serveur, veuillez réessayer plus tard!'});
       //message d'erreur a coder dans l'application
     });
   }
@@ -67,9 +73,9 @@ class EventList extends Component {
 
   componentDidUpdate() {
     //si le zipcode enregistré dans le state est differant de celui de props on fait une nouvelle requette a l'api.
-    if (this.props.zipcode != this.state.zipcode) {
+    if (this.props.zipcode !== this.state.zipcode) {
       //on reaffect le nouveau zipcode au state et on remmet la propriété initialized a false.
-      this.setState({zipcode: this.props.zipcode, initialized: false});
+      this.setState({zipcode: this.props.zipcode, initialized: false, error: null});
       this.getUrl();
     }
   }
@@ -83,11 +89,18 @@ class EventList extends Component {
   }
 
   render() {
+    //si error n'est pas null, on l'affiche
+    if (this.state.error != null) {
+      return (
+        <h4 className="text-center">{this.state.error}</h4>
+      );
+    }
+
     //tant que la phase d'initialisation n'est pas terminée on affiche loading
     if (this.state.initialized === false) {
       return (
         <p className="text-center">
-          Loading
+          Chargement
         </p>
       );
     }
