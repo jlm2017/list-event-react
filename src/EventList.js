@@ -12,15 +12,24 @@ class EventList extends Component {
       initialized: false,
       requestError: false,
       listEventJson: null,
+      value: null,
       index: 0,
     };
-    // this.prevItem = this.prevItem.bind(this);
-    // this.nextItem = this.nextItem.bind(this);
+
+    this.infoClick = this.infoClick.bind(this);
+  }
+
+  infoClick(value) {
+    this.setState({value: value});
+  }
+
+  clickBack() {
+    this.setState({value: null});
   }
 
   getUrl() {
     //on recupère sur api-adresse.data.gouv.fr les coordonnées du code postal passé en parramétre d'url
-    fetch('https://api-adresse.data.gouv.fr/search/?q='+ this.props.zipcode + '&postcode=' + this.props.zipcode)
+    fetch('https://api-adresse.data.gouv.fr/search/?q='+ this.state.zipcode + '&postcode=' + this.props.zipcode)
     .then(response => {
       return response.json();
     }).then(json => {
@@ -75,7 +84,7 @@ class EventList extends Component {
     //si le zipcode enregistré dans le state est differant de celui de props on fait une nouvelle requette a l'api.
     if (this.props.zipcode !== this.state.zipcode) {
       //on reaffect le nouveau zipcode au state et on remmet la propriété initialized a false.
-      this.setState({zipcode: this.props.zipcode, initialized: false, error: null});
+      this.setState({zipcode: this.props.zipcode, initialized: false, error: null, value: null});
       this.getUrl();
     }
   }
@@ -89,6 +98,40 @@ class EventList extends Component {
   }
 
   render() {
+    if (this.state.value !== null) {
+      return (
+        <div>
+          <div className="row">
+            <h3 className="col-xs-10"> <a href={`http://jlm2017.fr/${this.state.value.path}`} target="_blank">{this.state.value.name}</a></h3>
+            <a className="col-xs-2 btn btn-primary custom-btn" onClick={()=>this.clickBack()}>Retour</a>
+          </div>
+          <hr />
+          {this.state.value.description &&
+            <div>
+              <div className="intro">{this.state.value.description}</div>
+              <hr />
+            </div>
+          }
+          <h5>Adresse&nbsp;:</h5>
+          <h6>{this.state.value.location.name}</h6>
+          <p>{this.state.value.location.address}</p>
+          <a href={`http://maps.google.com/?q=${this.state.value.location.address}`} target="_blank">
+            Carte et itinéraires
+          </a>
+          <hr />
+          <h5>
+            Contact&nbsp;:
+          </h5>
+          <div><strong>Nom de l'initiatrice ou de l'initiateur&nbsp;:</strong> {this.state.value.contact.name}</div>
+          {this.state.value.contact.email && <div><strong>Email&nbsp;:</strong> {this.state.value.contact.email} </div> }
+          {this.state.value.contact.phone && <div><strong>Téléphone&nbsp;:</strong> 0{this.state.value.contact.phone} </div> }
+          <hr />
+          <h4>
+            Nombre de participants&nbsp;: {this.state.value.participants}
+          </h4>
+        </div>
+      );
+    }
     //si error n'est pas null, on l'affiche
     if (this.state.error != null) {
       return (
@@ -104,18 +147,20 @@ class EventList extends Component {
         </p>
       );
     }
-    // une fois la pase d'initialisation terminée on affiche la liste des événements obtenue
-    const listItems = this.state.listEventJson._items.slice((6 * this.state.index), ((6 * this.state.index) + 5)).map(eventItem => {
-      var result = <div key={eventItem._id}><EventItem eventItem={eventItem}></EventItem> {eventItem !== this.state.listEventJson._items.slice((6 * this.state.index), ((6 * this.state.index) + 5))[this.state.listEventJson._items.slice((6 * this.state.index), ((6 * this.state.index) + 5)).length - 1] && <hr />}</div>;
-      return (result);
-    });
+
     if (this.state.listEventJson._items.length === 0) {
       return (
-        <p className="text-center vertical-center">
+        <p className="text-center">
           Pas d'événement dans les environs du code postal renseigné
         </p>
       );
     }
+
+    // une fois la pase d'initialisation terminée on affiche la liste des événements obtenue
+    const listItems = this.state.listEventJson._items.slice((6 * this.state.index), ((6 * this.state.index) + 5)).map(eventItem => {
+      var result = <div key={eventItem._id}><EventItem eventItem={eventItem} infoClick={this.infoClick}></EventItem> {eventItem !== this.state.listEventJson._items.slice((6 * this.state.index), ((6 * this.state.index) + 5))[this.state.listEventJson._items.slice((6 * this.state.index), ((6 * this.state.index) + 5)).length - 1] && <hr />}</div>;
+      return (result);
+    });
     return (
       <div className="container">
         <div className="row">
