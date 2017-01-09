@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import 'whatwg-fetch';
 import EventItem from './EventItem.js';
+import EventDisplay from './EventDisplay.js';
 
 
 class EventList extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      typeEvent: '',
       error: null,
       zipcode: this.props.zipcode,
       initialized: false,
@@ -17,6 +19,7 @@ class EventList extends Component {
     };
 
     this.infoClick = this.infoClick.bind(this);
+    this.clickBack = this.clickBack.bind(this);
   }
 
   infoClick(value) {
@@ -42,14 +45,14 @@ class EventList extends Component {
       var coordinates = json.features[0].geometry.coordinates;
       var urlZoomApi;
       //en fonction du type d'événement et des tags que l'on recherche on créé notre urlZoomApi
-      if (this.props.embedeventtype.split(',')[0] === 'groups'){
+      if (this.props.embedeventtype === 'groups'){
         urlZoomApi = 'https://api.jlm2017.fr/groups?where={"coordinates":{"$near":{"$geometry":{"type":"Point","coordinates":['+coordinates[0]+','+coordinates[1]+']}, "$maxDistance": 10000}}';
         if (this.props.embedTags[0] !== '')
           urlZoomApi += ',"tags": {"$elemMatch": {"$in": ' + JSON.stringify(this.props.embedTags) + '} }';
         urlZoomApi += '}';
       }
       else {
-        urlZoomApi = 'https://api.jlm2017.fr/events?where={"agenda": "' + this.props.embedeventtype.split(',')[0] + '" ,"coordinates":{"$near":{"$geometry":{"type":"Point","coordinates":['+coordinates[0]+','+coordinates[1]+']}, "$maxDistance": 10000}}';
+        urlZoomApi = 'https://api.jlm2017.fr/events?where={"agenda": "' + this.props.embedeventtype + '" ,"coordinates":{"$near":{"$geometry":{"type":"Point","coordinates":['+coordinates[0]+','+coordinates[1]+']}, "$maxDistance": 10000}}';
         if (this.props.embedTags[0] !== '')
           urlZoomApi += ',"tags": {"$elemMatch": {"$in": ' + JSON.stringify(this.props.embedTags) + '} }';
         urlZoomApi += '}';
@@ -57,7 +60,7 @@ class EventList extends Component {
       //une fois l'urlZoomApi obtenue, on lance getJson pour obtenir le JSON des événements qui nous intéréssent
       this.getJson(urlZoomApi);
     }).catch(() => {
-      this.setState({error: 'Erreur serveur, veuillez réessayer plus tard!'});
+      this.setState({error: 'Erreur serveur, veuillez réessayer plus tard! api'});
       //message d'erreur a coder dans l'application
     });
   }
@@ -82,9 +85,9 @@ class EventList extends Component {
 
   componentDidUpdate() {
     //si le zipcode enregistré dans le state est differant de celui de props on fait une nouvelle requette a l'api.
-    if (this.props.zipcode !== this.state.zipcode) {
+    if (this.props.zipcode !== this.state.zipcode || this.props.embedeventtype !== this.state.typeEvent) {
       //on reaffect le nouveau zipcode au state et on remmet la propriété initialized a false.
-      this.setState({zipcode: this.props.zipcode, initialized: false, error: null, value: null});
+      this.setState({zipcode: this.props.zipcode, initialized: false, error: null, value: null, typeEvent:this.props.embedeventtype});
       this.getUrl();
     }
   }
@@ -100,36 +103,7 @@ class EventList extends Component {
   render() {
     if (this.state.value !== null) {
       return (
-        <div>
-          <div className="row">
-            <h3 className="col-xs-10"> <a href={`http://jlm2017.fr/${this.state.value.path}`} target="_blank">{this.state.value.name}</a></h3>
-            <a className="col-xs-2 btn btn-primary custom-btn" onClick={()=>this.clickBack()}>Retour</a>
-          </div>
-          <hr />
-          {this.state.value.description &&
-            <div>
-              <div className="intro">{this.state.value.description}</div>
-              <hr />
-            </div>
-          }
-          <h5>Adresse&nbsp;:</h5>
-          <h6>{this.state.value.location.name}</h6>
-          <p>{this.state.value.location.address}</p>
-          <a href={`http://maps.google.com/?q=${this.state.value.location.address}`} target="_blank">
-            Carte et itinéraires
-          </a>
-          <hr />
-          <h5>
-            Contact&nbsp;:
-          </h5>
-          <div><strong>Nom de l'initiatrice ou de l'initiateur&nbsp;:</strong> {this.state.value.contact.name}</div>
-          {this.state.value.contact.email && <div><strong>Email&nbsp;:</strong> {this.state.value.contact.email} </div> }
-          {this.state.value.contact.phone && <div><strong>Téléphone&nbsp;:</strong> 0{this.state.value.contact.phone} </div> }
-          <hr />
-          <h4>
-            Nombre de participants&nbsp;: {this.state.value.participants}
-          </h4>
-        </div>
+        <EventDisplay value={this.state.value} backClick={this.clickBack}></EventDisplay>
       );
     }
     //si error n'est pas null, on l'affiche

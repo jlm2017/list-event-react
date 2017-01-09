@@ -8,10 +8,16 @@ class FormNoZipcode extends Component {
     this.state = {
       value: this.props.zipcode || '',
       zipcode: this.props.zipcode || null,
+      typeEvent: this.props.embedEventType || 'evenements_locaux'
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.radioChange = this.radioChange.bind(this);
+  }
+
+  radioChange(changeEvent){
+    this.setState({typeEvent: changeEvent.target.value});
   }
 
   handleChange(event) {
@@ -24,10 +30,13 @@ class FormNoZipcode extends Component {
   }
 
   render() {
+    var listValueRadio = ['evenements_locaux', 'groups', 'reunions_circonscription', 'melenchon']
+    var listLabelRadio = ['évévements locaux', 'groupes d\'appuis', 'assemblées de circonscription', 'événements de Jean-Luc Mélenchon'];
+    var displayTitle = listLabelRadio[listValueRadio.indexOf(this.state.typeEvent)];
     return (
       <div className="container">
         <h4 className="text-center">
-          Recherche des groupes d'appuis autour de chez vous
+          Recherche des {displayTitle} autour de chez vous
         </h4>
         <div className="row">
           <div className="col-responsive">
@@ -41,11 +50,39 @@ class FormNoZipcode extends Component {
             </form>
           </div>
         </div>
+        <div className="row">
+          <form className="form-inline col-responsive">
+            <div className="radio col-xs-6">
+              <label className="radio-inline">
+                <input type="radio" value="groups" onChange={this.radioChange} checked={(this.state.typeEvent === 'groups') ? true : false} />
+                Groupes d'appuis
+              </label>
+            </div>
+            <div className="radio col-xs-6">
+              <label className="radio-inline">
+                <input type="radio" value="evenements_locaux" onChange={this.radioChange} checked={(this.state.typeEvent === 'evenements_locaux') ? true : false}/>
+                Événements locaux
+              </label>
+            </div>
+            <div className="radio col-xs-6">
+              <label className="radio-inline">
+                <input type="radio" value="reunions_circonscription" onChange={this.radioChange} checked={(this.state.typeEvent === 'reunions_circonscription') ? true : false}/>
+                Assemblés de circonscription
+              </label>
+            </div>
+            <div className="radio col-xs-6">
+              <label className="radio-inline">
+                <input type="radio" value="melenchon" onChange={this.radioChange} checked={(this.state.typeEvent === 'melenchon') ? true : false}/>
+                Agenda JLM
+              </label>
+            </div>
+          </form>
+        </div>
         {this.state.zipcode != null &&
           <div className="row">
             <hr/>
             <br/>
-            <EventList zipcode={this.state.zipcode} embedeventtype={this.props.embedeventtype} embedTags={this.props.embedTags}/>
+            <EventList zipcode={this.state.zipcode} embedeventtype={this.state.typeEvent} embedTags={this.props.embedTags}/>
           </div>
         }
       </div>
