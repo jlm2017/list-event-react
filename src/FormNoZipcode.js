@@ -30,8 +30,8 @@ class FormNoZipcode extends Component {
   }
 
   render() {
-    var listValueRadio = ['evenements_locaux', 'groups', 'reunions_circonscription', 'melenchon']
-    var listLabelRadio = ['évévements locaux', 'groupes d\'appuis', 'assemblées de circonscription', 'événements de Jean-Luc Mélenchon'];
+    var listValueRadio = ['evenements_locaux', 'groups'];
+    var listLabelRadio = ['évévements locaux', 'groupes d\'appuis'];
     var displayTitle = listLabelRadio[listValueRadio.indexOf(this.state.typeEvent)];
     return (
       <div className="container">
@@ -62,18 +62,6 @@ class FormNoZipcode extends Component {
               <label className="radio-inline">
                 <input type="radio" value="evenements_locaux" onChange={this.radioChange} checked={(this.state.typeEvent === 'evenements_locaux') ? true : false}/>
                 Événements locaux
-              </label>
-            </div>
-            <div className="radio col-xs-6">
-              <label className="radio-inline">
-                <input type="radio" value="reunions_circonscription" onChange={this.radioChange} checked={(this.state.typeEvent === 'reunions_circonscription') ? true : false}/>
-                Assemblés de circonscription
-              </label>
-            </div>
-            <div className="radio col-xs-6">
-              <label className="radio-inline">
-                <input type="radio" value="melenchon" onChange={this.radioChange} checked={(this.state.typeEvent === 'melenchon') ? true : false}/>
-                Agenda JLM
               </label>
             </div>
           </form>

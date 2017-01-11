@@ -6,6 +6,7 @@ class EventDisplay extends Component {
   }
 
   render() {
+    var regex = /(<([^>]+)>)/ig;
     return (
       <div className="container">
         <div className="row">
@@ -15,7 +16,7 @@ class EventDisplay extends Component {
         <hr />
         {this.props.value.description &&
           <div>
-            <div className="intro" dangerouslySetInnerHTML={{__html: this.props.value.description}}></div>
+            <div className="intro" >{this.props.value.description.replace(regex, '')}</div>
             <hr />
           </div>
         }
