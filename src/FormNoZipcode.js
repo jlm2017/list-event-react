@@ -43,7 +43,7 @@ class FormNoZipcode extends Component {
               <div className="input-group">
                 <input className="form-control" type="text" value={this.state.value} placeholder="Code postal" onChange={this.handleChange} />
                 <div className="input-group-btn">
-                  <input className="btn btn-danger" type="submit" value="Rechercher"></input>
+                  <input className="btn btn-primary" type="submit" value="Rechercher"></input>
                 </div>
               </div>
             </form>
