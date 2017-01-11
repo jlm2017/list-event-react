@@ -8,7 +8,7 @@ class FormNoZipcode extends Component {
     this.state = {
       value: this.props.zipcode || '',
       zipcode: this.props.zipcode || null,
-      typeEvent: this.props.embedEventType || 'evenements_locaux'
+      typeEvent: this.props.embedeventtype || 'evenements_locaux'
     };
 
     this.handleChange = this.handleChange.bind(this);
