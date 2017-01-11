@@ -55,13 +55,13 @@ class FormNoZipcode extends Component {
             <div className="radio col-xs-6">
               <label className="radio-inline">
                 <input type="radio" value="groups" onChange={this.radioChange} checked={(this.state.typeEvent === 'groups') ? true : false} />
-                Groupes d'appuis
+                &nbsp;Groupes d'appuis
               </label>
             </div>
             <div className="radio col-xs-6">
               <label className="radio-inline">
                 <input type="radio" value="evenements_locaux" onChange={this.radioChange} checked={(this.state.typeEvent === 'evenements_locaux') ? true : false}/>
-                Événements locaux
+                &nbsp;Événements locaux
               </label>
             </div>
           </form>
