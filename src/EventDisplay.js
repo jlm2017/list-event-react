@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+var moment = require('moment');
+
 class EventDisplay extends Component {
   backClick(){
     this.props.backClick();
@@ -7,6 +9,12 @@ class EventDisplay extends Component {
 
   render() {
     var regex = /(<([^>]+)>)/ig;
+    var startTimeFormated = moment(this.props.value.startTime).locale('fr');
+    var endTimeFormated = moment(this.props.value.endTime).locale('fr');
+    console.log(this.props.value.startTime);
+    console.log(startTimeFormated.format('LLLL'));
+    console.log(this.props.value.endTime);
+    console.log(endTimeFormated.format('LLLL'));
     return (
       <div className="container">
         <div className="row">
@@ -27,6 +35,13 @@ class EventDisplay extends Component {
           Carte et itinéraires
         </a>
         <hr />
+        {this.props.value.agenda &&
+          <div>
+            <h5>Date&nbsp;:</h5>
+            <div className="date" >L'événement se déroulera du {startTimeFormated.format('LLLL')} au {endTimeFormated.format('LLLL')}</div>
+            <hr />
+          </div>
+        }
         <h5>
           Contact&nbsp;:
         </h5>
