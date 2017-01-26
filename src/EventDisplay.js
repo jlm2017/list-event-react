@@ -30,10 +30,8 @@ class EventDisplay extends Component {
         }
         <h5>Adresse&nbsp;:</h5>
         <h6>{this.props.value.location.name}</h6>
-        <p>{this.props.value.location.address}</p>
-        <a href={`http://maps.google.com/?q=${this.props.value.location.address}`} target="_blank">
-          Carte et itinéraires
-        </a>
+        <p className="col-xs-6">{this.props.value.location.address}</p>
+        <iframe className="col-xs-6" src={`https://jlm2017.github.io/map/?event_id=${this.props.value.id},${this.props.resource}&hide_panel=1&hide_address=1`} width="400" height="300" scrolling="no" frameBorder="0"></iframe>
         <hr />
         {this.props.value.agenda &&
           <div>

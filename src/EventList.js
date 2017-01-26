@@ -14,6 +14,7 @@ class EventList extends Component {
       initialized: false,
       requestError: false,
       listEventJson: null,
+      resource: '',
       value: null,
       index: 0,
     };
@@ -46,12 +47,14 @@ class EventList extends Component {
       var urlZoomApi;
       //en fonction du type d'événement et des tags que l'on recherche on créé notre urlZoomApi
       if (this.props.embedeventtype === 'groups'){
+        this.setState({resource: 'groups'});
         urlZoomApi = 'https://api.jlm2017.fr/groups?where={"coordinates":{"$near":{"$geometry":{"type":"Point","coordinates":['+coordinates[0]+','+coordinates[1]+']}, "$maxDistance": 10000}}';
         if (this.props.embedTags[0] !== '')
           urlZoomApi += ',"tags": {"$elemMatch": {"$in": ' + JSON.stringify(this.props.embedTags) + '} }';
         urlZoomApi += '}';
       }
       else {
+        this.setState({resource: 'events'});
         urlZoomApi = 'https://api.jlm2017.fr/events?where={"agenda": "' + this.props.embedeventtype + '" ,"coordinates":{"$near":{"$geometry":{"type":"Point","coordinates":['+coordinates[0]+','+coordinates[1]+']}, "$maxDistance": 10000}}';
         if (this.props.embedTags[0] !== '')
           urlZoomApi += ',"tags": {"$elemMatch": {"$in": ' + JSON.stringify(this.props.embedTags) + '} }';
@@ -103,7 +106,7 @@ class EventList extends Component {
   render() {
     if (this.state.value !== null) {
       return (
-        <EventDisplay value={this.state.value} backClick={this.clickBack}></EventDisplay>
+        <EventDisplay value={this.state.value} backClick={this.clickBack} resource={this.state.resource}></EventDisplay>
       );
     }
     //si error n'est pas null, on l'affiche
