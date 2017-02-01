@@ -1,22 +1,22 @@
 import React, { Component } from 'react';
 import 'whatwg-fetch';
+
 import EventItem from './EventItem.js';
-import EventDisplay from './EventDisplay.js';
+import {showQuery, showDetails} from './actions'
+import {Loading, Error} from './utils'
 
-
+// TODO: set default value for prop page
 class EventList extends Component {
   constructor(props) {
     super(props);
     this.state = {
       typeEvent: '',
       error: null,
-      zipcode: this.props.zipcode,
+      zipcode: this.props.params.zipcode,
       initialized: false,
       requestError: false,
       listEventJson: null,
       resource: '',
-      value: null,
-      index: 0,
     };
 
     this.infoClick = this.infoClick.bind(this);
@@ -24,7 +24,7 @@ class EventList extends Component {
   }
 
   infoClick(value) {
-    this.setState({value: value});
+    showDetails({itemType: this.props.params.itemType, id: value._id, search: this.props.location.search});
   }
 
   clickBack() {
@@ -33,7 +33,8 @@ class EventList extends Component {
 
   getUrl() {
     //on recupère sur api-adresse.data.gouv.fr les coordonnées du code postal passé en parramétre d'url
-    fetch('https://api-adresse.data.gouv.fr/search/?q='+ this.state.zipcode + '&postcode=' + this.props.zipcode)
+    // TODO: AJAX handling should be refactored into functions
+    fetch('https://api-adresse.data.gouv.fr/search/?q='+ this.state.zipcode + '&postcode=' + this.props.params.zipcode)
     .then(response => {
       return response.json();
     }).then(json => {
@@ -45,21 +46,32 @@ class EventList extends Component {
       //sinon on extrait les coordonées pour les insérées dans la requette urlZoomApi
       var coordinates = json.features[0].geometry.coordinates;
       var urlZoomApi;
+
+      // TODO: embedTags are no longer correctly handled: make sure they are
+      let tags = [];
+      if ('tags' in this.props.location.query) {
+        tags = this.props.location.query.tags.split(',');
+      }
+      console.log(tags);
+
+      // TODO: refactor this AJAX part to make it easier to follow
       //en fonction du type d'événement et des tags que l'on recherche on créé notre urlZoomApi
-      if (this.props.embedeventtype === 'groups'){
+      if (this.props.params.itemType === 'groupes') {
         this.setState({resource: 'groups'});
-        urlZoomApi = 'https://api.jlm2017.fr/groups?where={"coordinates":{"$near":{"$geometry":{"type":"Point","coordinates":['+coordinates[0]+','+coordinates[1]+']}, "$maxDistance": 10000}}';
-        if (this.props.embedTags[0] !== '')
-          urlZoomApi += ',"tags": {"$elemMatch": {"$in": ' + JSON.stringify(this.props.embedTags) + '} }';
+        urlZoomApi = 'https://api.jlm2017.fr/groups?where={"coordinates":{"$near":{"$geometry":{"type":"Point","coordinates":[' + coordinates[0] + ',' + coordinates[1] + ']}, "$maxDistance": 10000}}';
+        if (tags.length > 0)
+          urlZoomApi += ',"tags": {"$elemMatch": {"$in": ' + JSON.stringify(tags) + '} }';
         urlZoomApi += '}';
       }
       else {
         this.setState({resource: 'events'});
-        urlZoomApi = 'https://api.jlm2017.fr/events?where={"agenda": "' + this.props.embedeventtype + '" ,"coordinates":{"$near":{"$geometry":{"type":"Point","coordinates":['+coordinates[0]+','+coordinates[1]+']}, "$maxDistance": 10000}}';
-        if (this.props.embedTags[0] !== '')
-          urlZoomApi += ',"tags": {"$elemMatch": {"$in": ' + JSON.stringify(this.props.embedTags) + '} }';
+        urlZoomApi = 'https://api.jlm2017.fr/events?where={"agenda": "evenements_locaux" ,"coordinates":{"$near":{"$geometry":{"type":"Point","coordinates":[' + coordinates[0] + ',' + coordinates[1] + ']}, "$maxDistance": 10000}}';
+        if (tags.length > 0)
+          urlZoomApi += ',"tags": {"$elemMatch": {"$in": ' + JSON.stringify(tags) + '} }';
         urlZoomApi += '}';
       }
+
+      console.log(urlZoomApi);
       //une fois l'urlZoomApi obtenue, on lance getJson pour obtenir le JSON des événements qui nous intéréssent
       this.getJson(urlZoomApi);
     }).catch(() => {
@@ -71,9 +83,9 @@ class EventList extends Component {
   getJson(url) {
     //on execute la requette obtenue a la fin de getUrl
     fetch(url)
-    .then(response => {
-      return response.json();
-    }).then(json =>{
+      .then(response => {
+        return response.json();
+      }).then(json => {
       //on assigne l" JSON obenu au composant et on declare que la phase d'initialisation est terminée
       this.setState({initialized: true, listEventJson: json});
     }).catch(() => {
@@ -87,42 +99,42 @@ class EventList extends Component {
   }
 
   componentDidUpdate() {
+    // TODO: part of this should probably be in lifecycle method "willReceiveProps" instead of this one
     //si le zipcode enregistré dans le state est differant de celui de props on fait une nouvelle requette a l'api.
-    if (this.props.zipcode !== this.state.zipcode || this.props.embedeventtype !== this.state.typeEvent) {
+    if (this.props.params.zipcode !== this.state.zipcode || this.props.params.itemType !== this.state.typeEvent) {
       //on reaffect le nouveau zipcode au state et on remmet la propriété initialized a false.
-      this.setState({zipcode: this.props.zipcode, initialized: false, error: null, value: null, typeEvent:this.props.embedeventtype});
+      this.setState({zipcode: this.props.params.zipcode, initialized: false, error: null, value: null, typeEvent:this.props.params.itemType});
       this.getUrl();
     }
   }
 
   prevItem() {
-    this.setState({index: this.state.index - 1});
+    showQuery({
+      itemType: this.props.params.itemType,
+      zipcode: this.props.params.zipcode,
+      page: ((+this.props.params.page) || 1) - 1,
+      search: this.props.location.search
+    });
   }
 
   nextItem() {
-    this.setState({index: this.state.index + 1});
+    showQuery({
+      itemType: this.props.params.itemType,
+      zipcode: this.props.params.zipcode,
+      page: ((+this.props.params.page) || 1) + 1,
+      search: this.props.location.search
+    });
   }
 
   render() {
-    if (this.state.value !== null) {
-      return (
-        <EventDisplay value={this.state.value} backClick={this.clickBack} resource={this.state.resource}></EventDisplay>
-      );
-    }
     //si error n'est pas null, on l'affiche
     if (this.state.error != null) {
-      return (
-        <h4 className="text-center">{this.state.error}</h4>
-      );
+      return <Error message={this.state.error} />;
     }
 
     //tant que la phase d'initialisation n'est pas terminée on affiche loading
     if (this.state.initialized === false) {
-      return (
-        <p className="text-center">
-          Chargement
-        </p>
-      );
+      return <Loading />;
     }
 
     if (this.state.listEventJson._items.length === 0) {
@@ -134,16 +146,18 @@ class EventList extends Component {
     }
 
     // une fois la pase d'initialisation terminée on affiche la liste des événements obtenue
-    const listItems = this.state.listEventJson._items.slice((6 * this.state.index), ((6 * this.state.index) + 5)).map(eventItem => {
-      var result = <div key={eventItem._id}><EventItem eventItem={eventItem} infoClick={this.infoClick}></EventItem> {eventItem !== this.state.listEventJson._items.slice((6 * this.state.index), ((6 * this.state.index) + 5))[this.state.listEventJson._items.slice((6 * this.state.index), ((6 * this.state.index) + 5)).length - 1] && <hr />}</div>;
+    // TODO: this critical part is complicated to follow: refactor
+    const indexNumber = this.props.params.page ? (+this.props.params.page) - 1 : 0;
+    const listItems = this.state.listEventJson._items.slice((6 * indexNumber), ((6 * indexNumber) + 5)).map(eventItem => {
+      var result = <div key={eventItem._id}><EventItem itemType={this.props.params.itemType} eventItem={eventItem} infoClick={this.infoClick}></EventItem> {eventItem !== this.state.listEventJson._items.slice((6 * this.state.index), ((6 * this.state.index) + 5))[this.state.listEventJson._items.slice((6 * this.state.index), ((6 * this.state.index) + 5)).length - 1] && <hr />}</div>;
       return (result);
     });
     return (
       <div className="container">
         <div className="row">
           <div className="col-xs-2 text-center vertical-center">
-            {this.state.index > 0 &&
-              <div className="clicable-btn" onClick={()=>this.prevItem()}>
+            {indexNumber > 0 &&
+              <div className="clickable-btn" onClick={()=>this.prevItem()}>
                   <img src={require('../img/prev.png')} alt="precedent"></img>
               </div>
             }
@@ -152,13 +166,13 @@ class EventList extends Component {
             {listItems}
             {this.state.listEventJson._items.length > 5 &&
               <p className="text-center">
-                <small>Page&nbsp;: {this.state.index + 1} / {Math.floor(this.state.listEventJson._items.length / 6) + 1}</small>
+                <small>Page&nbsp;: {indexNumber + 1} / {Math.floor(this.state.listEventJson._items.length / 6) + 1}</small>
               </p>
             }
           </div>
           <div className="col-xs-2 text-center vertical-center">
-            {((6 * (this.state.index)) + 5) < this.state.listEventJson._items.length &&
-              <div className="clicable-btn" onClick={()=>this.nextItem()}>
+            {((6 * (indexNumber)) + 5) < this.state.listEventJson._items.length &&
+              <div className="clickable-btn" onClick={()=>this.nextItem()}>
                 <img src={require('../img/next.png')} alt="suivant"></img>
               </div>
             }
