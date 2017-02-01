@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import {Link} from 'react-router'
 
 class EventItem extends Component {
   clickInfo(){
@@ -9,7 +10,7 @@ class EventItem extends Component {
     return (
       <div className="row">
         <div className="col-xs-12 col-sm-8">
-          <h3> <a href={`http://jlm2017.fr/${this.props.eventItem.path}`} target="_blank">{this.props.eventItem.name}</a></h3>
+          <h3>{this.props.eventItem.name}</h3>
           {this.props.eventItem.location && this.props.eventItem.location.name &&
             <div>Lieu&nbsp;: {this.props.eventItem.location.name}</div>
           }
