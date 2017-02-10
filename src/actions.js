@@ -4,7 +4,9 @@ import {HISTORY_HANDLER} from './consts'
 
 // TODO: this set up is not entirely satisfying. maybe use something like Redux actions?
 
-export function showQuery({itemType, zipcode, page, search}){
+export function searchFor({itemType, zipcode, page}){
+  const search = HISTORY_HANDLER.getCurrentLocation().search;
+
   if (zipcode) {
     if (page) {
       HISTORY_HANDLER.push(`/${itemType}/recherche/${zipcode}/${page}${search}`);
@@ -16,8 +18,8 @@ export function showQuery({itemType, zipcode, page, search}){
   }
 }
 
-export function showDetails({itemType, id, search}) {
-  HISTORY_HANDLER.push(`/${itemType}/details/${id}${search}`);
+export function showDetails({itemType, id}) {
+  HISTORY_HANDLER.push(`/${itemType}/details/${id}${HISTORY_HANDLER.getCurrentLocation().search}`);
 }
 
 export function goBack() {

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import 'whatwg-fetch';
 
 import EventItem from './EventItem.js';
-import {showQuery, showDetails} from './actions'
+import {searchFor, showDetails} from './actions'
 import {Loading, Error} from './utils'
 
 // TODO: set default value for prop page
@@ -109,20 +109,18 @@ class EventList extends Component {
   }
 
   prevItem() {
-    showQuery({
+    searchFor({
       itemType: this.props.params.itemType,
       zipcode: this.props.params.zipcode,
-      page: ((+this.props.params.page) || 1) - 1,
-      search: this.props.location.search
+      page: ((+this.props.params.page) || 1) - 1
     });
   }
 
   nextItem() {
-    showQuery({
+    searchFor({
       itemType: this.props.params.itemType,
       zipcode: this.props.params.zipcode,
-      page: ((+this.props.params.page) || 1) + 1,
-      search: this.props.location.search
+      page: ((+this.props.params.page) || 1) + 1
     });
   }
 

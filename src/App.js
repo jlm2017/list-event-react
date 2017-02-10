@@ -5,7 +5,7 @@ import './App.css'
 import FormNoZipcode from './FormNoZipcode.js'
 import SearchTypeSelector from './SearchTypeSelector'
 import {ITEM_TYPES} from './consts'
-import {showQuery} from './actions'
+import {searchFor} from './actions'
 
 
 function TitleBar(props) {
@@ -23,11 +23,11 @@ class App extends Component {
   }
 
   zipcodeChange(zipcode) {
-    showQuery({itemType: this.props.params.itemType, zipcode, search: this.props.location.search});
+    searchFor({itemType: this.props.params.itemType, zipcode});
   }
 
   itemTypeChange(itemType) {
-    showQuery({itemType, zipcode: this.props.params.zipcode, search: this.props.location.search});
+    searchFor({itemType, zipcode: this.props.params.zipcode});
   }
 
   render() {
