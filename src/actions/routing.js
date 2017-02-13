@@ -1,6 +1,6 @@
 import 'whatwg-fetch'
 
-import {HISTORY_HANDLER} from './consts'
+import {HISTORY_HANDLER} from '../conf'
 
 // TODO: this set up is not entirely satisfying. maybe use something like Redux actions?
 
@@ -24,8 +24,4 @@ export function showDetails({itemType, id}) {
 
 export function goBack() {
   HISTORY_HANDLER.goBack();
-}
-
-export function getJsonFrom(url) {
-  return fetch(url).then(response => response.json());
 }

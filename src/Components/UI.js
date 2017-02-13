@@ -1,11 +1,11 @@
 import React, {Component} from 'react'
 
 
-import './App.css'
+import './UI.css'
 import FormNoZipcode from './FormNoZipcode.js'
 import SearchTypeSelector from './SearchTypeSelector'
-import {ITEM_TYPES} from './consts'
-import {searchFor} from './actions'
+import {ITEM_TYPES, ITEM_TYPES_MAP} from '../conf'
+import {searchFor} from '../actions/routing'
 
 
 function TitleBar(props) {
@@ -31,9 +31,9 @@ class App extends Component {
   }
 
   render() {
-    let item = ITEM_TYPES.find((item) => (item.value === this.props.params.itemType));
+    let item = ITEM_TYPES_MAP[this.props.params.itemType];
     // TODO: return 404 component if the itemType does not exist
-    let displayTitle = item ? item.label.toLowerCase() : "";
+    let displayTitle = item ? item.labelPlural : '';
     let showMenu = !('cacher-menu' in this.props.location.query);
     return (
 
@@ -45,7 +45,6 @@ class App extends Component {
           <SearchTypeSelector itemType={this.props.params.itemType} itemTypes={ITEM_TYPES}
                               onChange={this.itemTypeChange}/>
           <hr/>
-          <br/>
         </div>
         }
         <div className="row">

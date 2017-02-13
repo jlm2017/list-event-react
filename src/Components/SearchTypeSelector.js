@@ -1,5 +1,9 @@
 import React, {Component} from 'react';
 
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 function SearchTypeRadio(props) {
   return <div className="radio col-xs-6">
     <label className="radio-inline">
@@ -28,14 +32,14 @@ class SearchTypeSelector extends Component {
   }
 
   render() {
+    let radioBoxes = this.props.itemTypes.map((item) => (
+      <SearchTypeRadio itemValue={item.value} itemLabel={capitalize(item.labelPlural)} onChange={this.handleChange}
+                       selected={this.props.itemType === item.value} key={item.value}/>
+    ));
+
     return <div className="row">
       <form className="form-inline col-responsive">
-        {
-          this.props.itemTypes.map((item) => (
-            <SearchTypeRadio itemValue={item.value} itemLabel={item.label} onChange={this.handleChange}
-                             selected={this.props.itemType === item.value} key={item.value} />
-          ))
-        }
+        {radioBoxes}
       </form>
     </div>
   }
