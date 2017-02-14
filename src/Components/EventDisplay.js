@@ -10,7 +10,7 @@ import {NetworkError, EntityNotFoundError, BadDataError} from '../errors'
 const htlmTagsRegexp = /(<([^>]+)>)/ig;
 
 function EventMap(props) {
-  return <iframe className="col-xs-6"
+  return <iframe className="col-xs-6" style={{float: "right"}}
                  src={`https://jlm2017.github.io/map/?event_id=${props.id},${props.resource}&hide_panel=1&hide_address=1`}
                  width="400" height="300" scrolling="no" frameBorder="0"></iframe>;
 }
@@ -33,6 +33,7 @@ function EventDisplay(props) {
         {showBackButton && <a className="col-xs-2 btn btn-primary custom-btn" onClick={goBack}>Retour</a>}
       </div>
       <hr />
+      <EventMap id={props.value.id} resource={resource}/>
       {props.value.description &&
       <div>
         <div className="intro">{props.value.description.replace(htlmTagsRegexp, '')}</div>
@@ -43,7 +44,6 @@ function EventDisplay(props) {
       <h6>{props.value.location.name}</h6>
       <p className="col-xs-6">{props.value.location.address}</p>
 
-      <EventMap id={props.value.id} resource={resource} />
       <hr />
       {props.value.agenda &&
       <div>
