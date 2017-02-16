@@ -9,7 +9,7 @@ import {goBack} from '../actions/routing'
 import {NetworkError, EntityNotFoundError, BadDataError} from '../errors'
 
 function EventMap(props) {
-  return <iframe className="col-xs-6" style={{float: "right"}}
+  return <iframe style={{float: "right", width: "50%"}}
                  src={`https://jlm2017.github.io/map/?event_id=${props.id},${props.resource}&hide_panel=1&hide_address=1`}
                  width="400" height="300" scrolling="no" frameBorder="0"></iframe>;
 }
@@ -41,7 +41,7 @@ function EventDisplay(props) {
       }
       <h5>Adresse&nbsp;:</h5>
       <h6>{props.value.location.name}</h6>
-      <p className="col-xs-6">{props.value.location.address}</p>
+      <p style={{padding: "0 15px"}}>{props.value.location.address}</p>
 
       <hr />
       {props.value.agenda &&
