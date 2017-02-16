@@ -1,13 +1,12 @@
 import React, {Component} from 'react'
 import moment from 'moment'
+import sanitizeHtml from 'sanitize-html'
 
 import {fetchItem} from '../actions/api'
 import {ITEM_TYPES_MAP} from '../conf'
 import {Loading, Error} from '../utils'
 import {goBack} from '../actions/routing'
 import {NetworkError, EntityNotFoundError, BadDataError} from '../errors'
-
-const htlmTagsRegexp = /(<([^>]+)>)/ig;
 
 function EventMap(props) {
   return <iframe className="col-xs-6" style={{float: "right"}}
@@ -36,7 +35,7 @@ function EventDisplay(props) {
       <EventMap id={props.value.id} resource={resource}/>
       {props.value.description &&
       <div>
-        <div className="intro">{props.value.description.replace(htlmTagsRegexp, '')}</div>
+        <div className="intro" dangerouslySetInnerHTML={{__html:sanitizeHtml(props.value.description)}} />
         <hr />
       </div>
       }
