@@ -36,8 +36,15 @@ export function List(props) {
   )
 }
 
+
+class ListContainer extends React.Component {
+
+}
+
+
 function mapStateToProps(state, props) {
   const itemType = props.params.itemType;
+  const {requestStatus, requestId} = state.list[itemType];
 
   return {
     items: state[itemType]
