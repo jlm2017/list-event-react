@@ -42,7 +42,8 @@ export const ITEM_TYPES_MAP = ITEM_TYPES.reduce(function(map, it) {
  * The base location of the API
  * @type {string}
  */
-export const API_ENDPOINT = "https://api.jlm2017.fr";
+export const API_RO_ENDPOINT = "https://api.jlm2017.fr";
+export const API_RW_ENDPOINT = "https://api.jlm2017.fr";
 
 /**
  * The base location of the zipcode API

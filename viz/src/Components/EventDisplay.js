@@ -47,8 +47,7 @@ function EventDisplay(props) {
       {props.value.agenda &&
       <div>
         <h5>Date&nbsp;:</h5>
-        <div className="date">L'événement se déroulera du {startTimeFormated.format('LLLL')}
-          au {endTimeFormated.format('LLLL')}</div>
+        <div className="date">L'événement se déroulera du {startTimeFormated.format('LLLL')} au {endTimeFormated.format('LLLL')}</div>
         <hr />
       </div>
       }

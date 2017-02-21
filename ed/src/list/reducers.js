@@ -1,35 +1,46 @@
 import {combineReducers} from 'redux';
+import moment from 'moment';
 
 import * as actions from './actions';
 import {ITEM_TYPES} from '../conf'
 
-const REQUEST_STATUS_NONE = "none";
-const REQUEST_STATUS_PROGRESS = "progress";
-const REQUEST_STATUS_LONG = "long";
-const REQUEST_STATUS_SUCCESS = "success";
-const REQUEST_STATUS_ERROR = "error";
+export const REQUEST_STATUS_NONE = "none";
+export const REQUEST_STATUS_PROGRESS = "progress";
+export const REQUEST_STATUS_LONG = "long";
+export const REQUEST_STATUS_SUCCESS = "success";
+export const REQUEST_STATUS_ERROR = "error";
 
 const initialState = {
   lastRequestStatus: REQUEST_STATUS_NONE,
-  lastUpdated: null,
+  lastSuccess: null,
+  items: [],
 };
 
-function commonlistReducer(state = initialState, action) {
-  switch(action.type) {
-    case actions.LIST_REQUEST:
-      return Object.assign({}, state, {lastRequestStatus: REQUEST_STATUS_PROGRESS});
-    case actions.LIST_REQUEST_SUCCESS:
-      return Object.assign({}, state, {lastRequestStatus: REQUEST_STATUS_SUCCESS});
-    case actions.LIST_REQUEST_ERROR:
-      return Object.assign({}, state, {requestStatus: REQUEST_STATUS_ERROR});
-    default:
-      return state;
+function createReducer(itemType) {
+  return function commonlistReducer(state = initialState, action) {
+    if (action.itemType !== itemType) { return state; }
+    switch (action.type) {
+      case actions.LIST_REQUEST:
+        return Object.assign({}, state, {lastRequestStatus: REQUEST_STATUS_PROGRESS});
+      case actions.LIST_REQUEST_SUCCESS:
+        return Object.assign({}, state, {
+          lastRequestStatus: REQUEST_STATUS_SUCCESS,
+          lastSuccess: moment(),
+          items: action.items
+        });
+      case actions.LIST_REQUEST_ERROR:
+        return Object.assign({}, state, {lastRequestStatus: REQUEST_STATUS_ERROR});
+      case actions.LIST_REQUEST_LONG:
+        return Object.assign({}, state, {lastRequestStatus: REQUEST_STATUS_LONG});
+      default:
+        return state;
+    }
   }
 }
 
 const reducerMaps = {};
 for (let itemType of ITEM_TYPES) {
-  reducerMaps[itemType.apiName] = commonlistReducer;
+  reducerMaps[itemType.value] = createReducer(itemType.value);
 }
 
 const listReducer = combineReducers(reducerMaps);

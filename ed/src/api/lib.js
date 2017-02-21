@@ -1,7 +1,7 @@
 import 'whatwg-fetch';
 import {NetworkError, ApiError, EntityNotFoundError, BadDataError} from './errors'
 
-import {API_ENDPOINT, ZIPCODE_ENDPOINT} from '../conf'
+import {API_RO_ENDPOINT, ZIPCODE_ENDPOINT} from '../conf'
 
 export function fetchZipCodeCoordinates(zipCode) {
   const url = `${ZIPCODE_ENDPOINT}/search/?q=${zipCode}&postcode=${zipCode}`;
@@ -31,12 +31,8 @@ export function fetchZipCodeCoordinates(zipCode) {
     });
 }
 
-
-export function fetchCloseItems(resource, coordinates, options) {
-  options = options || {};
-  const maxDistance = options.maxDistance || 10000;
-
-  const where = {
+export function whereCloseTo(coordinates, maxDistance = 10000) {
+  return {
     coordinates: {
       "$near": {
         "$geometry": {
@@ -47,15 +43,19 @@ export function fetchCloseItems(resource, coordinates, options) {
       }
     }
   };
+}
+
+export function fetchItems(resource, options) {
+  options = options || {};
+
+  let url = `${API_RO_ENDPOINT}/${resource}/`;
 
   if (options.where) {
-    Object.assign(where, options.where);
+    const whereQueryString = JSON.stringify(options.where);
+    url = `${url}?where=${whereQueryString}`
   }
 
-  const whereQueryString = JSON.stringify(where);
-  const url = `${API_ENDPOINT}/${resource}/?where=${whereQueryString}`;
-
-  console.log(`fetchCloseItems, url: ${url}`);
+  console.log(`fetchItems, url: ${url}`);
 
   return fetch(url)
     .catch(function (err) {
@@ -70,7 +70,7 @@ export function fetchCloseItems(resource, coordinates, options) {
       throw new BadDataError('API response was not JSON');
     })
     .then(function (content) {
-      if(!('_items' in content)) {
+      if (!('_items' in content)) {
         throw new BadDataError('No _items field in response');
       }
       return content._items;
@@ -81,7 +81,7 @@ export function fetchCloseItems(resource, coordinates, options) {
 export function fetchItem(resource, id, options) {
   options = options || {};
 
-  const url = `${API_ENDPOINT}/${resource}/${id}`;
+  const url = `${API_RO_ENDPOINT}/${resource}/${id}`;
 
   console.log(`fetchItem, url: ${url}`);
 
