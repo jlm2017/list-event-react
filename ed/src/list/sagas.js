@@ -10,8 +10,6 @@ function * scheduleFetch(action) {
   yield fork(fetchList, action.itemType);
   const result = yield take([FETCH_LIST_ERROR, FETCH_LIST_SUCCESS]);
 
-  console.log('got: ', result);
-
   if (result.type === FETCH_LIST_SUCCESS) {
     const items = result.items.map((item) => item._id);
     yield put(list_request_success(action.itemType, items));

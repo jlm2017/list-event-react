@@ -12,12 +12,15 @@ import './index.css';
 import apiReducer from './api/reducers';
 import listReducer from './list/reducers';
 import listSaga from './list/sagas';
+import editorReducer from './editor/ducks';
+import editorSaga from './editor/sagas';
 
 moment.locale('fr');
 
 const reducer = combineReducers({
   api: apiReducer,
   list: listReducer,
+  editor: editorReducer,
   form: formReducer
 });
 
@@ -30,6 +33,7 @@ const store = createStore(
 );
 
 sagaMiddleware.run(listSaga);
+sagaMiddleware.run(editorSaga);
 
 ReactDOM.render(
   <Provider store={store}>

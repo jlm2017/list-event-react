@@ -12,7 +12,7 @@ function App(props) {
     <Router history={hashHistory}>
       <Route component={UI} path="/">
         <IndexRoute component={Welcome} />
-        <Route component={EventEditor} path="/evenements/:id" />
+        <Route component={EventEditor} path="/:itemType/:id" />
         <Route component={List} path="/:itemType" />
       </Route>
     </Router>

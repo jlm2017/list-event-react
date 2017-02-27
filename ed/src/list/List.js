@@ -1,6 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import Spinner from 'react-spinkit';
+import {Link} from 'react-router';
 
 import {ITEM_TYPES_MAP} from '../conf';
 
@@ -23,11 +24,12 @@ function RefreshButton(props) {
 }
 
 function ListItem(props) {
-  const {item} = props;
+  const {item, itemType, query} = props;
   return (
     <li>
-      <h3>{item.name} </h3>
+      <h3><Link to={{pathname: `/${itemType}/${item._id}`, query}}>{item.name}</Link></h3>
       {item.location && item.location.name && <div>Lieu&nbsp;: {item.location.name}</div>}
+
     </li>
   );
 }
@@ -56,7 +58,7 @@ class List extends React.Component {
 
   render() {
 
-    const {itemType, items, lastSuccess, fetchList} = this.props;
+    const {itemType, items, lastSuccess, fetchList, query} = this.props;
     const {labelPlural, label} = ITEM_TYPES_MAP[itemType];
 
     if (this.props.lastRequestStatus === reducers.REQUEST_STATUS_NONE) {
@@ -73,7 +75,7 @@ class List extends React.Component {
         {
           items
             ? <ul>
-              { items.map((item) => <ListItem key={item.id} item={item}/>) }
+              { items.map((item) => <ListItem key={item._id} item={item} query={query} itemType={itemType} />) }
             </ul>
             : <p>Vous n'avez pas de {label}</p>
         }
@@ -93,7 +95,8 @@ function mapStateToProps(state, props) {
     itemType,
     items: items_obj,
     lastRequestStatus,
-    lastSuccess
+    lastSuccess,
+    query: props.query
   }
 }
 

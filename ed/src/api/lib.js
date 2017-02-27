@@ -43,10 +43,11 @@ export function whereCloseTo(coordinates, maxDistance = 10000) {
       }
     }
   };
-}
+};
 
-export function fetchItems(resource, options) {
+exports.fetchItems = function fetchItems(resource, options) {
   options = options || {};
+  const {APIKey} = options;
 
   let url = `${API_RO_ENDPOINT}/${resource}/`;
 
@@ -55,9 +56,15 @@ export function fetchItems(resource, options) {
     url = `${url}?where=${whereQueryString}`
   }
 
+  const init = {headers: new Headers()};
+
+  if (APIKey) {
+    appendAuthHeaders(init.headers, APIKey);
+  }
+
   console.log(`fetchItems, url: ${url}`);
 
-  return fetch(url)
+  return fetch(url, init)
     .catch(function (err) {
       // fetch only rejects on network failure
       throw new NetworkError('Cannot reach API');
@@ -80,12 +87,19 @@ export function fetchItems(resource, options) {
 
 export function fetchItem(resource, id, options) {
   options = options || {};
+  const {APIKey} = options;
 
   const url = `${API_RO_ENDPOINT}/${resource}/${id}`;
 
+  const init = {};
+
+  if (APIKey) {
+    appendAuthHeaders(init.headers, APIKey);
+  }
+
   console.log(`fetchItem, url: ${url}`);
 
-  return fetch(url)
+  return fetch(url, init)
     .catch(function (err) {
       // fetch only rejects on network failure
       throw new NetworkError('Cannot reach API');
