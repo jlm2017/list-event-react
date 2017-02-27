@@ -9,8 +9,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bluebird": "^3.4.7",
     "body-parser": "^1.16.1",
     "express": "^4.14.1",
-    "passport": "^0.3.2"
+    "express-http-proxy": "^0.11.0",
+    "js-base64": "^2.1.9",
+    "node-fetch": "^1.6.3",
+    "passport": "^0.3.2",
+    "redis": "^2.6.5",
+    "whatwg-fetch": "^2.0.2",
+    "winston": "^2.3.1"
   }
 }
