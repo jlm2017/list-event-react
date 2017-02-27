@@ -1,7 +1,7 @@
 import 'whatwg-fetch';
 import {NetworkError, ApiError, EntityNotFoundError, BadDataError} from './errors'
 
-import {API_RO_ENDPOINT, ZIPCODE_ENDPOINT} from '../conf'
+import {API_RO_ENDPOINT, API_RW_ENDPOINT, ZIPCODE_ENDPOINT} from '../conf'
 
 export function fetchZipCodeCoordinates(zipCode) {
   const url = `${ZIPCODE_ENDPOINT}/search/?q=${zipCode}&postcode=${zipCode}`;
@@ -43,11 +43,10 @@ export function whereCloseTo(coordinates, maxDistance = 10000) {
       }
     }
   };
-};
+}
 
-exports.fetchItems = function fetchItems(resource, options) {
+export function fetchItems(resource, options) {
   options = options || {};
-  const {APIKey} = options;
 
   let url = `${API_RO_ENDPOINT}/${resource}/`;
 
@@ -57,10 +56,6 @@ exports.fetchItems = function fetchItems(resource, options) {
   }
 
   const init = {headers: new Headers()};
-
-  if (APIKey) {
-    appendAuthHeaders(init.headers, APIKey);
-  }
 
   console.log(`fetchItems, url: ${url}`);
 
@@ -87,15 +82,10 @@ exports.fetchItems = function fetchItems(resource, options) {
 
 export function fetchItem(resource, id, options) {
   options = options || {};
-  const {APIKey} = options;
 
   const url = `${API_RO_ENDPOINT}/${resource}/${id}`;
 
   const init = {};
-
-  if (APIKey) {
-    appendAuthHeaders(init.headers, APIKey);
-  }
 
   console.log(`fetchItem, url: ${url}`);
 
@@ -124,4 +114,41 @@ export function fetchItem(resource, id, options) {
         throw new BadDataError('API response was not JSON');
       }
     });
+}
+
+export function patchItem(resource, id, patch, options) {
+  options = options || {};
+  const {email, token} = options;
+
+  const url = `${API_RW_ENDPOINT}/${resource}/${id}`;
+
+  const init = {method: "PATCH", headers: new Headers()};
+  init.headers.append('X-email', email);
+  init.headers.append('X-token', token);
+
+  return fetch(url, init)
+    .catch(function (err) {
+      throw new NetworkError('Cannot reach API');
+    })
+    .then(function (res) {
+      if (!res.ok) {
+        if (res.status === 404) {
+          throw new EntityNotFoundError(`${resource}/${id} does not exist`);
+        } else {
+          throw new ApiError('Unspecified API error');
+        }
+      } else {
+        return res.json();
+      }
+    })
+    .catch(function(err) {
+      if(err instanceof ApiError) {
+        // rethrow if err is already an ApiError
+        throw err;
+      } else {
+        // if not, it means the error comes from the .json() call
+        throw new BadDataError('API response was not JSON');
+      }
+    });
+  //TODO: handle app error on PATCH
 }

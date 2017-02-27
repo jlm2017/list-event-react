@@ -1,8 +1,5 @@
 import React from 'react';
-import {connect} from 'react-redux';
 import {Field, reduxForm} from 'redux-form';
-import Spinner from 'react-spinkit';
-import {requestItem, enterEditor, leaveEditor, EDITOR_REQUEST_NONE} from './ducks';
 import {renderInput, renderCountrySelector, renderDatetimePicker, renderMarkdownEditor} from './widgets/fields';
 
 import 'react-datetime/css/react-datetime.css';
@@ -15,7 +12,6 @@ function formatDate(utcdatestring) {
 function normalizeDate(date) {
   return date.toDate().toUTCString();
 }
-
 
 function FormRow({children}) {
   // props.children.length should be 1, 2, 3, 4 or 6
@@ -40,8 +36,9 @@ function FormRow({children}) {
 
 
 function EventFormView(props) {
-  const {handleSubmit} = props;
-  return <form onSubmit={handleSubmit}>
+  const {handleSubmit, submitPatch} = props;
+  console.log(submitPatch);
+  return <form onSubmit={handleSubmit(submitPatch)}>
     <fieldset>
       <FormRow>
         <Field name="name" component={renderInput} label="Titre de l'événement"/>
@@ -86,77 +83,15 @@ function EventFormView(props) {
         <Field name="location.city" component={renderInput} label="Ville" />
       </FormRow>
       <FormRow>
-        <Field name="description" component={renderMarkdownEditor} label="Description" />
+        <Field name="description" component={renderMarkdownEditor} label="Description, incluant un itinéraire" />
       </FormRow>
     </fieldset>
     <input className="submit-button btn btn-primary" name="commit" value="Sauvegarder" type="submit" />
   </form>
 }
 
-
 const EventForm = reduxForm({
-  form: 'eventEditor'
+  form: 'eventEditor',
 })(EventFormView);
 
-
-class EventEditor extends React.Component {
-
-  dispatchAll() {
-    console.log("Let's update baby");
-    if (this.props.item === null && this.props.request === EDITOR_REQUEST_NONE) {
-      this.props.requestItem();
-    }
-    if (!this.props.entered && this.props.item !== null) {
-      this.props.enterEditor(this.props.item);
-    }
-  }
-
-  componentDidMount() {
-    this.dispatchAll();
-  }
-
-  componentDidUpdate() {
-    this.dispatchAll();
-  }
-
-  componentWillUnmount() {
-    this.props.leaveEditor();
-  }
-
-  render() {
-    if (this.props.entered) {
-      return <div className="container">
-        <EventForm initialValues={this.props.initial}/>
-      </div>
-    } else {
-      return <Spinner spinnerName='three-bounce' noFadeIn/>;
-    }
-  }
-}
-
-function mapStateToProps(state, props) {
-  const {itemType, id} = props.params;
-  const {initial, request, entered} = state.editor[itemType];
-  const item = state.api[itemType][id] || null;
-  return {
-    itemType,
-    id,
-    item,
-    initial,
-    request,
-    entered
-  }
-}
-
-function mapDispatchToProps(dispatch, props) {
-  const {itemType, id} = props.params;
-
-  return {
-    requestItem: () => dispatch(requestItem(itemType, id)),
-    enterEditor: (item) => dispatch(enterEditor(itemType, item)),
-    leaveEditor: () => dispatch(leaveEditor(itemType))
-  }
-}
-
-
-export default connect(mapStateToProps, mapDispatchToProps)(EventEditor);
+export default EventForm;

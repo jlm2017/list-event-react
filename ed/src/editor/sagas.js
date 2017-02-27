@@ -1,9 +1,32 @@
-import {takeLatest, take, fork, put } from 'redux-saga/effects'
+import {takeLatest, take, fork, put, call } from 'redux-saga/effects'
+import { SubmissionError } from 'redux-form';
 
-import {fetchEntity} from '../api/sagas'
-import {FETCH_ENTITY_SUCCESS, FETCH_ENTITY_ERROR} from '../api/actions'
+import isPojo from 'is-pojo';
+import deepEqual from 'deep-equal';
 
-import {ITEM_REQUEST, requestItemSuccess, requestItemError} from './ducks'
+import {fetchEntity, patchEntity} from '../api/sagas'
+import {FETCH_ENTITY_SUCCESS, FETCH_ENTITY_ERROR, PATCH_ENTITY_SUCCESS, PATCH_ENTITY_ERROR} from '../api/actions'
+
+import {ITEM_REQUEST, ITEM_PATCH_REQUEST, requestItemSuccess, requestItemError} from './ducks'
+
+function getDifferences(base, changes) {
+  const res = {};
+
+  for (let key of Object.keys(changes)) {
+    if(isPojo(base[key])) {
+      if (!deepEqual(base[key], changes[key])) {
+        res[key] = getDifferences(base[key], changes[key])
+      }
+    } else {
+      if(base[key] !== changes[key]) {
+        res[key] = changes[key];
+      }
+    }
+  }
+
+  return res;
+}
+
 
 function * scheduleFetch(action) {
   console.log("Scheduling fetch!");
@@ -17,6 +40,26 @@ function * scheduleFetch(action) {
   }
 }
 
+
+function * schedulePatch({itemType, id, initial, data, defer}) {
+  console.log("handling patch");
+
+  const {resolve, reject} = defer;
+  const patch = getDifferences(initial, data);
+
+  const [result] = yield [
+    take([PATCH_ENTITY_SUCCESS, PATCH_ENTITY_ERROR]),
+    fork(patchEntity, itemType, id, patch)
+  ];
+
+  if (result.type === PATCH_ENTITY_SUCCESS) {
+    yield call(resolve, result.payload);
+  } else {
+    yield call(reject, result.payload);
+  }
+}
+
 export default function * editorSaga() {
   yield takeLatest(ITEM_REQUEST, scheduleFetch);
+  yield takeLatest(ITEM_PATCH_REQUEST, schedulePatch);
 }

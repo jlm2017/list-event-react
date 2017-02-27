@@ -9,6 +9,10 @@ export const ITEM_REQUEST = "ed/editor/REQUEST";
 const ITEM_REQUEST_SUCCESS = "ed/editor/REQUEST/SUCCESS";
 const ITEM_REQUEST_ERROR = "ed/editor/REQUEST/ERROR";
 
+export const ITEM_PATCH_REQUEST = "ed/editor/PATCH/";
+const ITEM_PATCH_SUCCESS = "ed/editor/PATCH/success";
+const ITEM_PATCH_ERROR = "ed/editor/PATCH/error";
+
 export function requestItemSuccess(itemType, item) {
   return {
     type: ITEM_REQUEST_SUCCESS,
@@ -45,6 +49,14 @@ export function requestItem(itemType, id) {
     id
   }
 }
+
+export function patchItem(payload) {
+  return {
+    type: ITEM_PATCH_REQUEST,
+    ...payload
+  };
+}
+
 
 export const EDITOR_REQUEST_NONE = 'ed/editor/request/none';
 const EDITOR_REQUEST_STARTED = 'ed/editor/request/started';
