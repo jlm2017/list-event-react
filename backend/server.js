@@ -5,6 +5,8 @@ const redis = require('redis');
 const crypto = require('crypto');
 const proxy = require('express-http-proxy');
 const base64 = require('js-base64').Base64;
+const cors = require('cors');
+const expressWinston = require('express-winston');
 
 Promise.promisifyAll(crypto);
 Promise.promisifyAll(redis.RedisClient.prototype);
@@ -13,7 +15,7 @@ const port = process.env.PORT || 5001;
 const APIKey = process.env.API_KEY;
 const LOG_LEVEL = process.env.LOG_LEVEL || 'info';
 const TOKEN_LENGTH = +process.env.TOKEN_LENGTH || 32;
-const API_ENDPOINT = process.env.API_ENDPOINT || "https://api.jlm2017.fr/";
+const API_ENDPOINT = process.env.API_ENDPOINT || "http://api.redado.dev";
 
 const fetchItem = require('./api')(API_ENDPOINT).fetchItem;
 
@@ -119,6 +121,23 @@ const app = express();
 const redisClient = redis.createClient();
 
 const router = express.Router();
+
+app.use(expressWinston.logger({
+  transports: [
+    new winston.transports.Console({
+      json: true,
+      colorize: true
+    })
+  ],
+  meta: true, // optional: control whether you want to log the meta data about the request (default to true)
+  msg: "HTTP {{res.statusCode}} {{req.method}} {{req.url}}", // optional: customize the default logging message. E.g. "{{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}"
+  expressFormat: false, // Use the default Express/morgan request formatting. Enabling this will override any msg if true. Will only output colors with colorize set to true
+  colorize: true, // Color the text and status code, using the Express/morgan color palette (text: gray, status: default green, 3XX cyan, 4XX yellow, 5XX red).
+  ignoreRoute: function (req, res) { return false; } // optional: allows to skip some log messages based on request and/or response
+}));
+
+// allow CORS
+app.use(cors());
 
 // add email and token attributes to the req object from headers
 router.use(tokenParamsMiddleware);
