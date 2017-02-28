@@ -41,15 +41,13 @@ function * scheduleFetch(action) {
 }
 
 
-function * schedulePatch({itemType, id, initial, data, defer}) {
-  console.log("handling patch");
-
+function * schedulePatch({itemType, id, initial, data, defer, options}) {
   const {resolve, reject} = defer;
   const patch = getDifferences(initial, data);
 
   const [result] = yield [
     take([PATCH_ENTITY_SUCCESS, PATCH_ENTITY_ERROR]),
-    fork(patchEntity, itemType, id, patch)
+    fork(patchEntity, itemType, id, patch, {...options, etag: initial._etag})
   ];
 
   if (result.type === PATCH_ENTITY_SUCCESS) {

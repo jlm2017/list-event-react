@@ -36,8 +36,7 @@ function FormRow({children}) {
 
 
 function EventFormView(props) {
-  const {handleSubmit, submitPatch} = props;
-  console.log(submitPatch);
+  const {error, handleSubmit, submitPatch, submitting, pristine, reset} = props;
   return <form onSubmit={handleSubmit(submitPatch)}>
     <fieldset>
       <FormRow>
@@ -86,7 +85,9 @@ function EventFormView(props) {
         <Field name="description" component={renderMarkdownEditor} label="Description, incluant un itinéraire" />
       </FormRow>
     </fieldset>
-    <input className="submit-button btn btn-primary" name="commit" value="Sauvegarder" type="submit" />
+    <input className="submit-button btn btn-primary" name="commit" value="Sauvegarder" type="submit"
+           disabled={submitting || pristine} />
+    <button className="btn btn-default" disabled={submitting || pristine} onClick={reset}>Effacer mes changements</button>
   </form>
 }
 

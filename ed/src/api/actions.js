@@ -50,7 +50,7 @@ export function fetch_entity_error (error, itemType, options) {
 
 export function patch_entity_success (response, itemType, patch, options) {
   return {
-    type: FETCH_ENTITY_SUCCESS,
+    type: PATCH_ENTITY_SUCCESS,
     itemType,
     options,
     response
@@ -59,7 +59,7 @@ export function patch_entity_success (response, itemType, patch, options) {
 
 export function patch_entity_error (error, itemType, patch, options) {
   return {
-    type: FETCH_ENTITY_ERROR,
+    type: PATCH_ENTITY_ERROR,
     itemType,
     options,
     error

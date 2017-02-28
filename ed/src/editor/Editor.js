@@ -8,6 +8,7 @@ import GroupForm from './GroupForm';
 
 
 function submitPatch({itemType, id, initial, email, token}) {
+  console.log({itemType, id, initial, email, token});
   return function(data, dispatch) {
     return new Promise((resolve, reject) => {
       dispatch(patchItem({
@@ -15,7 +16,8 @@ function submitPatch({itemType, id, initial, email, token}) {
         id,
         initial,
         data,
-        defer: {resolve, reject}
+        defer: {resolve, reject},
+        options: {email, token}
       }));
     });
   };
@@ -33,7 +35,8 @@ function mapStateToProps(state, props) {
     initial,
     request,
     entered,
-    email, token
+    email, token,
+    submitPatch: submitPatch({itemType, id, initial, email, token})
   }
 }
 
@@ -44,19 +47,7 @@ function mapDispatchToProps(dispatch, props) {
     requestItem: () => dispatch(requestItem(itemType, id)),
     enterEditor: (item) => dispatch(enterEditor(itemType, item)),
     leaveEditor: () => dispatch(leaveEditor(itemType)),
-    submitPatch: (params) => () => dispatch(submitPatch(params))
   }
-}
-
-function mergeProps(stateProps, dispatchProps) {
-  const {itemType, id, initial, email, token} = stateProps;
-  const {submitPatch} = dispatchProps;
-
-  return {
-    ...stateProps,
-    ...dispatchProps,
-    submitPatch: submitPatch({itemType, id, initial, email, token})
-  };
 }
 
 const components = {
@@ -100,7 +91,7 @@ class Editor extends React.Component {
 
     if (this.props.entered) {
       return <div className="container">
-        <Component initialValues={this.props.initial}/>
+        <Component initialValues={this.props.initial} submitPatch={this.props.submitPatch} />
       </div>
     } else {
       return <Spinner spinnerName='three-bounce' noFadeIn/>;
@@ -108,5 +99,5 @@ class Editor extends React.Component {
   }
 }
 
-const connectedEditor = connect(mapStateToProps, mapDispatchToProps, mergeProps)(Editor);
+const connectedEditor = connect(mapStateToProps, mapDispatchToProps)(Editor);
 export default connectedEditor;

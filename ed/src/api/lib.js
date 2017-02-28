@@ -118,13 +118,21 @@ export function fetchItem(resource, id, options) {
 
 export function patchItem(resource, id, patch, options) {
   options = options || {};
-  const {email, token} = options;
+  const {email, token, etag} = options;
 
   const url = `${API_RW_ENDPOINT}/${resource}/${id}`;
 
-  const init = {method: "PATCH", headers: new Headers()};
+  const init = {
+    method: "PATCH",
+    headers: new Headers(),
+    body: JSON.stringify(patch)
+  };
   init.headers.append('X-email', email);
   init.headers.append('X-token', token);
+  init.headers.append('Content-type', 'application/json');
+  init.headers.append('If-match', etag);
+
+  console.log(`patchItem, url: ${url}`);
 
   return fetch(url, init)
     .catch(function (err) {

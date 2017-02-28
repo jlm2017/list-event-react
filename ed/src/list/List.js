@@ -96,7 +96,7 @@ function mapStateToProps(state, props) {
     items: items_obj,
     lastRequestStatus,
     lastSuccess,
-    query: props.query
+    query: props.location.query
   }
 }
 
