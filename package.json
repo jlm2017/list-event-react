@@ -1,25 +1,16 @@
 {
-  "name": "listOfEvents",
-  "version": "0.1.0",
-  "private": true,
   "devDependencies": {
-    "react-scripts": "0.8.5"
+    "concurrently": "^3.4.0"
   },
-  "dependencies": {
-    "moment": "^2.17.1",
-    "react": "^15.4.2",
-    "react-dom": "^15.4.2",
-    "react-router": "^3.0.2",
-    "sanitize-html": "^1.14.1",
-    "whatwg-fetch": "^2.0.1"
-  },
+  "name": "interface",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
+    "dev": "concurrently \"yarn dev-backend\" \"yarn dev-frontend\"",
+    "dev-backend": "concurrently \"yarn dev-backend-redis\" \"yarn dev-backend-server\"",
+    "dev-backend-redis": "redis-server",
+    "dev-backend-server": "cd backend && envdir ./env node server.js",
+    "dev-frontend": "cd frontend && yarn start",
+    "install-backend": "cd backend && yarn",
+    "install-frontend": "cd frontend && yarn",
+    "postinstall": "concurrently \"yarn install-backend\" \"yarn install-frontend\""
   }
 }
