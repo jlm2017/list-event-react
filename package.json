@@ -1,0 +1,16 @@
+{
+  "devDependencies": {
+    "concurrently": "^3.4.0"
+  },
+  "name": "interface",
+  "scripts": {
+    "dev": "concurrently \"yarn dev-backend\" \"yarn dev-frontend\"",
+    "dev-backend": "concurrently \"yarn dev-backend-redis\" \"yarn dev-backend-server\"",
+    "dev-backend-redis": "redis-server",
+    "dev-backend-server": "cd backend && envdir ./env node server.js",
+    "dev-frontend": "cd frontend && yarn start",
+    "install-backend": "cd backend && yarn",
+    "install-frontend": "cd frontend && yarn",
+    "postinstall": "concurrently \"yarn install-backend\" \"yarn install-frontend\""
+  }
+}
