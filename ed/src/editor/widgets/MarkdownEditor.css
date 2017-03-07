@@ -1,0 +1,8 @@
+.CodeMirror {
+    border: 1px solid #ccc;
+}
+
+.previsualisation {
+    height: 300px;
+    overflow: auto;
+}
