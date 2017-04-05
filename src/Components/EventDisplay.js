@@ -78,6 +78,7 @@ class EventDisplayContainer extends Component {
   }
 
   componentDidMount() {
+    const showCreating = 'show_creating' in this.props.location.query;
     let apiName = ITEM_TYPES_MAP[this.props.params.itemType].apiName;
     fetchItem(apiName, this.props.params.id)
       .then((item) => {
@@ -90,8 +91,11 @@ class EventDisplayContainer extends Component {
         } else if (err instanceof BadDataError) {
           errorMessage = 'Un problème de communication avec le serveur a été rencontré. Réessayez plus tard.';
         } else if (err instanceof EntityNotFoundError) {
-          let itemLabel = ITEM_TYPES_MAP[this.props.params.itemType].label;
-          errorMessage = `Cet ${itemLabel} n'existe pas.`
+          const demonstrativeForm = ITEM_TYPES_MAP[this.props.params.itemType].demonstrativeForm;
+          const formulation = showCreating ?
+            "est en cours de création. Attendez quelques minutes pour voir cette page apparaître." :
+            "n'existe pas.";
+          errorMessage = `${demonstrativeForm} ${formulation}`;
         } else {
           errorMessage = 'Une erreur inconnue a été rencontrée. Réessayez plus tard.'
         }

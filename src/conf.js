@@ -15,6 +15,7 @@ export const ITEM_TYPES = [
     value: 'groupes',
     label: 'groupe d\'appui',
     labelPlural: "groupes d'appui",
+    demonstrativeForm: "Ce groupe d'appui",
     apiName: 'groups',
     searchOptions: {}
   },
@@ -22,6 +23,7 @@ export const ITEM_TYPES = [
     value: 'evenements',
     label: 'événement local',
     labelPlural: 'événements locaux',
+    demonstrativeForm: "Cet événement",
     apiName: 'events',
     searchOptions: {agenda: 'evenements_locaux'}
   }
