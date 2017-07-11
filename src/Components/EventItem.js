@@ -7,8 +7,6 @@ class EventItem extends Component {
   }
 
   render() {
-    const startTimeFormated = moment(this.props.event.start_time).locale('fr');
-
     return (
       <div className="row vertical-center">
         <div className="col-xs-12 col-sm-8">
@@ -16,7 +14,7 @@ class EventItem extends Component {
           {this.props.event.location && this.props.event.location.name &&
           <div>Lieu&nbsp;: {this.props.event.location.name}</div>
           }
-          {this.props.event.start_time && <div>Date&nbsp;: {startTimeFormated.format('LLLL')}</div>
+          {this.props.event.start_time && <div>Date&nbsp;: {moment(this.props.event.start_time).locale('fr').format('LLLL')}</div>
           }
         </div>
         <div className="col-xs-12 col-sm-4 text-center">
