@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import moment from 'moment';
 
 class EventItem extends Component {
   onDetails() {
@@ -6,12 +7,16 @@ class EventItem extends Component {
   }
 
   render() {
+    const startTimeFormated = moment(this.props.event.start_time).locale('fr');
+
     return (
       <div className="row vertical-center">
         <div className="col-xs-12 col-sm-8">
           <h3>{this.props.event.name}</h3>
           {this.props.event.location && this.props.event.location.name &&
           <div>Lieu&nbsp;: {this.props.event.location.name}</div>
+          }
+          {this.props.event.start_time && <div>Date&nbsp;: {startTimeFormated.format('LLLL')}</div>
           }
         </div>
         <div className="col-xs-12 col-sm-4 text-center">

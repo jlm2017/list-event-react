@@ -17,8 +17,8 @@ function EventMap(props) {
 
 function EventDisplay(props) {
 
-  const startTimeFormated = moment(props.value.startTime).locale('fr');
-  const endTimeFormated = moment(props.value.endTime).locale('fr');
+  const startTimeFormated = moment(props.value.start_time).locale('fr');
+  const endTimeFormated = moment(props.value.end_time).locale('fr');
 
   let resource = ITEM_TYPES_MAP[props.itemType].apiName;
   let showBackButton = !props.hideBack;
@@ -44,11 +44,11 @@ function EventDisplay(props) {
       <p className="col-xs-6">{props.value.location.address}</p>
 
       <hr />
-      {props.value.agenda &&
+      {props.value.calendar &&
       <div>
         <h5>Date&nbsp;:</h5>
-        <div className="date">L'événement se déroulera du {startTimeFormated.format('LLLL')}
-          au {endTimeFormated.format('LLLL')}</div>
+        <div className="date">L'événement se déroulera du {startTimeFormated.format('LLLL') + ' '}
+          au {endTimeFormated.format('LLLL')}.</div>
         <hr />
       </div>
       }
@@ -60,9 +60,11 @@ function EventDisplay(props) {
       {props.value.contact.phone &&
       <div><strong>Téléphone&nbsp;:</strong> 0{props.value.contact.phone} </div> }
       <hr />
+      {props.value.calendar &&
       <h4>
         Nombre de participants&nbsp;: {props.value.participants}
       </h4>
+      }
     </div>
   );
 }

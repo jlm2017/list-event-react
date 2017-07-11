@@ -34,26 +34,8 @@ export function fetchZipCodeCoordinates(zipCode) {
 
 export function fetchCloseItems(resource, coordinates, options) {
   options = options || {};
-  const maxDistance = options.maxDistance || 10000;
 
-  const where = {
-    coordinates: {
-      "$near": {
-        "$geometry": {
-          type: "Point",
-          coordinates: coordinates,
-        },
-        "$maxDistance": maxDistance
-      }
-    }
-  };
-
-  if (options.where) {
-    Object.assign(where, options.where);
-  }
-
-  const whereQueryString = JSON.stringify(where);
-  const url = `${API_ENDPOINT}/${resource}/?where=${whereQueryString}`;
+  const url = `${API_ENDPOINT}/${resource}/?order_by_distance_to=${JSON.stringify(coordinates)}`;
 
   console.log(`fetchCloseItems, url: ${url}`);
 

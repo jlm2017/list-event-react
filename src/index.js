@@ -7,7 +7,7 @@ import App from './Components/App'
 
 // TODO: add 404 component
 
-document.title = 'JLM 2017';
+document.title = 'La France insoumise';
 ReactDOM.render(
   <App />,
   document.getElementById('root')
