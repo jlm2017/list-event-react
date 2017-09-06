@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import moment from 'moment'
 import sanitizeHtml from 'sanitize-html'
+import qs from 'query-string'
 
 import {fetchItem} from '../actions/api'
 import {ITEM_TYPES_MAP} from '../conf'
@@ -9,7 +10,7 @@ import {goBack} from '../actions/routing'
 import {NetworkError, EntityNotFoundError, BadDataError} from '../errors'
 
 function EventMap(props) {
-  return <iframe className="col-xs-6" style={{float: "right"}}
+  return <iframe title="Carte" className="col-xs-6" style={{float: "right"}}
                  src={`https://jlm2017.github.io/map/?event_id=${props.id},${props.resource}&hide_panel=1&hide_address=1`}
                  width="400" height="300" scrolling="no" frameBorder="0"></iframe>;
 }
@@ -80,9 +81,9 @@ class EventDisplayContainer extends Component {
   }
 
   componentDidMount() {
-    const showCreating = 'show_creating' in this.props.location.query;
-    let apiName = ITEM_TYPES_MAP[this.props.params.itemType].apiName;
-    fetchItem(apiName, this.props.params.id)
+    const showCreating = 'show_creating' in qs.parse(this.props.location.search);
+    let apiName = ITEM_TYPES_MAP[this.props.match.params.itemType].apiName;
+    fetchItem(apiName, this.props.match.params.id)
       .then((item) => {
         this.setState({error: null, value: item});
       })
@@ -107,13 +108,13 @@ class EventDisplayContainer extends Component {
   }
 
   render() {
-    let hideBack = 'cacher-menu' in this.props.location.query;
+    let hideBack = 'cacher-menu' in qs.parse(this.props.location.search);
 
     if (this.state.error) {
       return <Error message={this.state.error}/>
     }
     else if (this.state.value) {
-      return <EventDisplay value={this.state.value} itemType={this.props.params.itemType}
+      return <EventDisplay value={this.state.value} itemType={this.props.match.params.itemType}
                            hideBack={hideBack}/>
     } else {
       return <Loading />

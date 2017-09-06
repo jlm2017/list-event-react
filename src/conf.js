@@ -1,5 +1,3 @@
-import {hashHistory} from 'react-router'
-
 /**
  * Array of searchable item types.
  * Every object in this array must have the following attributes:
@@ -50,14 +48,5 @@ export const API_ENDPOINT = "https://api.lafranceinsoumise.fr/legacy";
  * The base location of the zipcode API
  */
 export const ZIPCODE_ENDPOINT = "https://api-adresse.data.gouv.fr";
-
-/**
- * The specific history handler to use with React Router
- *
- * Right now, we use hashHistory to allow compatibility with github pages.
- * browserHistory would be prettier and more standard, but requires specific
- * configuration of the web server, which cannot be done with gh-pages.
- */
-export const HISTORY_HANDLER = hashHistory;
 
 export const NB_ITEMS_PER_PAGE = 5;

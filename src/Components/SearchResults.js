@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import qs from 'query-string'
 
 import {searchFor, showDetails} from '../actions/routing'
 import {Loading, Error} from '../utils'
@@ -29,12 +30,12 @@ function SearchResults(props) {
     <div className="container">
       <div className="row vertical-center">
         {page > 1
-          ? <PageChangeButton action={onPrevPage} image={require('../../img/prev.png')} role="Précédent"/>
+          ? <PageChangeButton action={onPrevPage} image={require('../img/prev.png')} role="button"/>
           : <EmptyColumn/>
         }
         <EventList events={events} currentPage={page} totalPages={totalPages} onDetails={onDetails}/>
         {page < totalPages
-          ? <PageChangeButton action={onNextPage} image={require('../../img/next.png')} role="Suivant"/>
+          ? <PageChangeButton action={onNextPage} image={require('../img/next.png')} role="button"/>
           : <EmptyColumn/>
         }
       </div>
@@ -50,7 +51,7 @@ export default class SearchResultsContainer extends Component {
     this.state = {
       typeEvent: '',
       error: null,
-      zipcode: this.props.params.zipcode,
+      zipcode: this.props.match.params.zipcode,
       initialized: false,
       requestError: false,
       items: null,
@@ -60,34 +61,37 @@ export default class SearchResultsContainer extends Component {
     this.eventInfo = this.eventInfo.bind(this);
     this.prevPage = this.prevPage.bind(this);
     this.nextPage = this.nextPage.bind(this);
+    this.searchFor = searchFor.bind(this);
+    this.showDetails = showDetails.bind(this);
   }
 
   eventInfo(value) {
-    showDetails({itemType: this.props.params.itemType, id: value._id, search: this.props.location.search});
+    this.showDetails({itemType: this.props.match.params.itemType, id: value._id, search: this.props.location.search});
   }
 
   prevPage() {
-    searchFor({
-      itemType: this.props.params.itemType,
-      zipcode: this.props.params.zipcode,
-      page: ((+this.props.params.page) || 1) - 1
+    this.searchFor({
+      itemType: this.props.match.params.itemType,
+      zipcode: this.props.match.params.zipcode,
+      page: ((+this.props.match.params.page) || 1) - 1
     });
   }
 
   nextPage() {
-    searchFor({
-      itemType: this.props.params.itemType,
-      zipcode: this.props.params.zipcode,
-      page: ((+this.props.params.page) || 1) + 1
+    this.searchFor({
+      itemType: this.props.match.params.itemType,
+      zipcode: this.props.match.params.zipcode,
+      page: ((+this.props.match.params.page) || 1) + 1
     });
   }
 
   getUrl() {
-    fetchZipCodeCoordinates(this.props.params.zipcode)
+    fetchZipCodeCoordinates(this.props.match.params.zipcode)
       .then((coordinates) => {
-        const tags = 'tags' in this.props.location.query ? this.props.location.query.tags.split(',') : null;
+        const query = qs.parse(this.props.location.search)
+        const tags = 'tags' in query ? query.tags.split(',') : null;
         const tag_options = tags ? {tags: {"$elemMatch": {"$in": JSON.stringify(tags)}}} : {};
-        const itemTypeConfig = ITEM_TYPES_MAP[this.props.params.itemType];
+        const itemTypeConfig = ITEM_TYPES_MAP[this.props.match.params.itemType];
 
         return fetchCloseItems(
           itemTypeConfig.apiName,
@@ -124,14 +128,14 @@ export default class SearchResultsContainer extends Component {
   componentDidUpdate() {
     // TODO: part of this should probably be in lifecycle method "willReceiveProps" instead of this one
     //si le zipcode enregistré dans le state est differant de celui de props on fait une nouvelle requette a l'api.
-    if (this.props.params.zipcode !== this.state.zipcode || this.props.params.itemType !== this.state.typeEvent) {
+    if (this.props.match.params.zipcode !== this.state.zipcode || this.props.match.params.itemType !== this.state.typeEvent) {
       //on reaffect le nouveau zipcode au state et on remmet la propriété initialized a false.
       this.setState({
-        zipcode: this.props.params.zipcode,
+        zipcode: this.props.match.params.zipcode,
         initialized: false,
         error: null,
         value: null,
-        typeEvent: this.props.params.itemType
+        typeEvent: this.props.match.params.itemType
       });
       this.getUrl();
     }
@@ -157,7 +161,7 @@ export default class SearchResultsContainer extends Component {
     }
 
     // une fois la pase d'initialisation terminée on affiche la liste des événements obtenue
-    const page = this.props.params.page ? +this.props.params.page : 1;
+    const page = this.props.match.params.page ? +this.props.match.params.page : 1;
     const all_events = this.state.items;
 
     const totalPages = Math.ceil(all_events.length / NB_ITEMS_PER_PAGE);

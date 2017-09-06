@@ -1,25 +1,20 @@
 import React from 'react'
-import {Router, Route, IndexRedirect} from 'react-router'
+import {HashRouter, Switch, Route, Redirect} from 'react-router-dom'
 
-import {HISTORY_HANDLER} from '../conf'
 import UI from './UI'
-import SearchResults from './SearchResults'
-import EventDisplay from './EventDisplay.js'
-
-function Wrapper(props) {
-  return <div>
-    {props.children}
-  </div>
-}
 
 export default function App(props) {
-  return <Router history={HISTORY_HANDLER}>
-    <Route path="/" component={Wrapper}>
-      <IndexRedirect to="/groupes"/>
-      <Route path=":itemType" component={UI}>
-        <Route path="recherche/:zipcode(/:page)" component={SearchResults}/>
-        <Route path="details/:id" component={EventDisplay}/>
-      </Route>
-    </Route>
-  </Router>;
+  return (
+    /**
+     * Right now, we use hashHistory to allow compatibility with github pages.
+     * browserHistory would be prettier and more standard, but requires specific
+     * configuration of the web server, which cannot be done with gh-pages.
+     */
+    <HashRouter>
+      <Switch>
+        <Route path="/:itemType" component={UI} />
+        <Route exact path="/" render={() => <Redirect to="/groupes/" />} />
+      </Switch>
+    </HashRouter>
+  );
 }
