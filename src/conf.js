@@ -45,6 +45,15 @@ export const ITEM_TYPES_MAP = ITEM_TYPES.reduce(function(map, it) {
 export const API_ENDPOINT = "https://api.lafranceinsoumise.fr/legacy";
 
 /**
+ * The information for OAuth2
+ */
+export const OAUTH = {
+  clientId: 'react_app',
+  clientSecret: 'thohrahShe1Taengegoomeganei8ook9',
+  authorizationUri: 'https://auth.lafranceinsoumise.fr/autoriser',
+  accessTokenUri: 'https://auth.lafranceinsoumise.fr/token',
+}
+/**
  * The base location of the zipcode API
  */
 export const ZIPCODE_ENDPOINT = "https://api-adresse.data.gouv.fr";

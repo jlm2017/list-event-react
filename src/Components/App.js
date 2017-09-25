@@ -1,5 +1,6 @@
 import React from 'react'
 import {HashRouter, Switch, Route, Redirect} from 'react-router-dom'
+import {CallbackHandler} from './Authenticate'
 
 import UI from './UI'
 
@@ -12,6 +13,7 @@ export default function App(props) {
      */
     <HashRouter>
       <Switch>
+        <Route exact path="/oauth_callback" component={CallbackHandler} />
         <Route path="/:itemType" component={UI} />
         <Route exact path="/" render={() => <Redirect to="/groupes/" />} />
       </Switch>
