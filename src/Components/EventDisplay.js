@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import Cookies from 'universal-cookie'
 import moment from 'moment'
 import sanitizeHtml from 'sanitize-html'
 import qs from 'query-string'
@@ -8,6 +9,9 @@ import {ITEM_TYPES_MAP} from '../conf'
 import {Loading, Error} from '../utils'
 import {goBack} from '../actions/routing'
 import {NetworkError, EntityNotFoundError, BadDataError} from '../errors'
+import Authenticate from './Authenticate'
+
+const cookies = new Cookies();
 
 function EventMap(props) {
   return <iframe title="Carte" className="col-xs-6" style={{float: "right"}}
@@ -66,6 +70,17 @@ function EventDisplay(props) {
         Nombre de participants&nbsp;: {props.value.participants}
       </h4>
       }
+      <Authenticate>
+        <div>{props.value.is_organizer &&
+          <p>
+            <a class="btn btn-primary" href={`http://f-i.jlm2017.fr/users/event_pages/${props.value.id}/edit`}>
+              Modifier l'événement
+            </a>
+          </p>
+        }
+        <p><small>Connecté comme {cookies.get('userEmail')}.</small></p>
+      </div>
+      </Authenticate>
     </div>
   );
 }

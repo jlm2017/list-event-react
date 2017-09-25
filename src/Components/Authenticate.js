@@ -51,7 +51,9 @@ export default withRouter(class Authenticate extends Component {
         }
       });
       if (res.status === 200) {
-        return this.setState({authenticated: true, user: res.json()})
+        this.setState({authenticated: true, user: await res.json()});
+        cookies.set('userEmail', this.state.user.email);
+        return;
       }
     }
 
